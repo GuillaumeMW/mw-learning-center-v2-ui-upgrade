@@ -312,184 +312,85 @@ const CourseDashboard = () => {
     );
   }
 
-  // Original dashboard for users with progress
+  // Dashboard for users with progress (training started)
   return (
-    <div className="space-y-12">
-      {/* Welcome Section */}
-      <div className="text-center space-y-6">
-        <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-          Welcome to MW Learning Center
+    <div className="max-w-[960px] mx-auto px-4 space-y-8">
+      {/* Header Section */}
+      <div className="text-left space-y-4">
+        <h1 className="text-4xl font-bold text-black">
+          MovingWaldo Certification Program
         </h1>
-        
-        {profile && (
-          <p className="text-2xl text-muted-foreground">
-            Hello <span className="text-primary font-medium">{profile.first_name}</span>, ready to continue your journey?
-          </p>
-        )}
       </div>
 
-      {/* Current Course Section */}
-      {currentCourse && (
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-gradient-to-br from-background to-accent/20 rounded-2xl p-8 border shadow-lg">
-            <div className="flex flex-col lg:flex-row items-center gap-8">
-              {/* Course Info */}
-              <div className="flex-1 space-y-6">
-                <div className="space-y-2">
-                  <Badge variant="secondary" className="text-sm font-medium">
-                    Level {currentCourse.level}
-                  </Badge>
-                  <h2 className="text-3xl font-bold text-foreground">
-                    {currentCourse.title}
-                  </h2>
-                  <p className="text-lg text-muted-foreground">
-                    {currentCourse.description}
-                  </p>
-                </div>
+      {/* Training Level Subtitle */}
+      <div>
+        <h2 className="text-2xl font-bold text-black">Training Level 1</h2>
+      </div>
 
-                {/* Progress Section */}
-                {courseProgress.total > 0 && (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Target className="h-5 w-5 text-foreground" />
-                      <span className="text-lg font-semibold text-foreground">Your Progress</span>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">{courseProgress.completed} of {courseProgress.total} items completed</span>
-                        <span className="text-lg font-bold text-primary">{courseProgress.percentage}%</span>
-                      </div>
-                      <Progress value={courseProgress.percentage} className="h-3 bg-muted" />
-                    </div>
-                  </div>
-                )}
-                {courseProgress.total === 0 && (
-                  <div className="text-muted-foreground">
-                    No learning items defined for this course yet.
-                  </div>
-                )}
-
-                {/* CTA Button */}
-                <div className="space-y-3">
-                  <Button 
-                    size="lg" 
-                    className="text-lg px-8 py-6 hover-scale w-full"
-                    onClick={() => navigate(`/course/${currentCourse.id}`)}
-                  >
-                    {courseProgress.completed > 0 ? (
-                      <>
-                        Resume Course <ArrowRight className="ml-2 h-5 w-5" />
-                      </>
-                    ) : (
-                      <>
-                        Start Level {currentCourse.level} <ArrowRight className="ml-2 h-5 w-5" />
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-
-              {/* Certificate Badge */}
-              <div className="lg:w-80 flex justify-center">
-                <div className="relative">
-                  <img 
-                    src={certificateBadge} 
-                    alt={`Level ${currentCourse.level} Certificate`}
-                    className="w-full h-auto max-w-sm rounded-2xl shadow-xl"
-                  />
-                  {courseProgress.percentage === 100 && (
-                    <div className="absolute -top-2 -right-2">
-                      <Badge className="bg-green-600 text-white font-bold px-3 py-1">
-                        COMPLETED
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-              </div>
+      {/* Progress Section */}
+      {currentCourse && courseProgress.total > 0 && (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-black">Training Progress</span>
+              <span className="text-black font-semibold">{courseProgress.percentage}%</span>
             </div>
+            <Progress value={courseProgress.percentage} className="h-3" />
+            <span className="text-sm text-[#242526]">
+              {courseProgress.completed}/{courseProgress.total} subsections completed
+            </span>
+          </div>
+          
+          {/* Continue Training Button */}
+          <div className="flex">
+            <Button 
+              style={{ backgroundColor: '#fa372c' }}
+              className="text-white hover:opacity-90 px-8 py-3 text-lg font-medium"
+              onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
+            >
+              Continue Level 1 Training
+            </Button>
           </div>
         </div>
       )}
 
-      {/* Certification Workflow Cards */}
-      {currentCourse && (
-        <div className="max-w-6xl mx-auto">
-          <CertificationWorkflowCards 
-            course={{
-              id: currentCourse.id,
-              level: currentCourse.level,
-              title: currentCourse.title
-            }}
-            courseProgress={courseProgress.percentage}
-            certificationWorkflow={certificationWorkflows[currentCourse.level] || null}
-          />
-        </div>
-      )}
-
-      {/* Future Courses Section */}
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-foreground mb-4">
-            Your Learning Path
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            Complete each level to unlock the next certification
-          </p>
-        </div>
+      {/* Next Steps Section */}
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold text-black">Next Steps</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {courses.map((course, index) => {
-            const status = getCourseStatus(course);
-            const progress = getCourseProgress(course);
-            const isCurrentCourse = currentCourse?.id === course.id;
-            
-            return (
-              <div 
-                key={course.id} 
-                className={`relative bg-card rounded-xl border p-6 transition-all hover:shadow-md ${
-                  isCurrentCourse ? 'ring-2 ring-primary/50 bg-primary/5' : ''
-                }`}
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                {/* Current Course Indicator */}
-                {isCurrentCourse && (
-                  <div className="absolute -top-3 -right-3">
-                    <Badge className="bg-primary text-white font-bold">
-                      CURRENT
-                    </Badge>
-                  </div>
-                )}
-                
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Badge variant={status === 'available' ? 'default' : 'secondary'}>
-                      Level {course.level}
-                    </Badge>
-                    {status === 'locked' && <Lock className="h-4 w-4 text-muted-foreground" />}
-                  </div>
-                  
-                  <h3 className="text-xl font-semibold">{course.title}</h3>
-                  <p className="text-muted-foreground text-sm">{course.description}</p>
-                  
-                  {progress.total > 0 && (
-                    <div className="space-y-2">
-                      <Progress value={progress.percentage} className="h-2" />
-                      <span className="text-xs text-muted-foreground">{progress.percentage}% complete</span>
-                    </div>
-                  )}
-                  {progress.total === 0 && (
-                    <div className="text-xs text-muted-foreground">No learning items</div>
-                  )}
-                  
-                  <div className="text-xs text-muted-foreground">
-                    {status === 'available' && 'Ready to start'}
-                    {status === 'locked' && 'Complete previous levels first'}
-                    {status === 'coming-soon' && 'Coming soon'}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        <div className="space-y-4">
+          {/* Certification Exam */}
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+              <FileText className="w-6 h-6 text-black" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-black">Certification Exam</h3>
+              <p className="text-[#242526]">Pass the Level 1 exam to proceed.</p>
+            </div>
+          </div>
+
+          {/* Contract */}
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+              <FileText className="w-6 h-6 text-black" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-black">Contract</h3>
+              <p className="text-[#242526]">Review and sign the advisor agreement.</p>
+            </div>
+          </div>
+
+          {/* Subscription */}
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+              <FileText className="w-6 h-6 text-black" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-black">Subscription</h3>
+              <p className="text-[#242526]">Choose a subscription plan to activate your certification.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
