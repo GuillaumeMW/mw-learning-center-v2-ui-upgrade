@@ -207,95 +207,91 @@ export const CourseStructure = ({ courseId }: CourseStructureProps) => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {sections.map((section, sectionIndex) => (
-        <Card key={section.id}>
+        <div key={section.id} className="bg-white border border-gray-200 rounded-lg">
           <Collapsible 
             open={expandedSections.has(section.id)}
             onOpenChange={() => toggleSection(section.id)}
           >
             <CollapsibleTrigger asChild>
-              <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-                <CardTitle className="flex items-center justify-between">
+              <div className="cursor-pointer p-6 hover:bg-gray-50 transition-colors">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center">
+                    <span className="w-8 h-8 bg-[#fa372c] text-white rounded-full flex items-center justify-center text-sm font-medium">
                       {sectionIndex + 1}
                     </span>
-                    <span>{section.title}</span>
+                    <div>
+                      <h3 className="text-lg font-bold text-black">{section.title}</h3>
+                      {section.description && (
+                        <p className="text-sm text-gray-600 mt-1">
+                          {section.description}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="secondary">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-gray-500">
                       {section.subsections?.length || 0} items
-                    </Badge>
+                    </span>
                     {expandedSections.has(section.id) ? (
-                      <ChevronDown className="h-4 w-4" />
+                      <ChevronDown className="h-4 w-4 text-gray-500" />
                     ) : (
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-4 w-4 text-gray-500" />
                     )}
                   </div>
-                </CardTitle>
-                {section.description && (
-                  <p className="text-sm text-muted-foreground text-left">
-                    {section.description}
-                  </p>
-                )}
-              </CardHeader>
+                </div>
+              </div>
             </CollapsibleTrigger>
             
             <CollapsibleContent>
-              <CardContent className="pt-0">
+              <div className="px-6 pb-6">
                 <div className="space-y-2">
                   {section.subsections?.map((subsection, subsectionIndex) => {
                     const isCompleted = isSubsectionCompleted(subsection.id);
                     
                     return (
-                      <Button
+                      <button
                         key={subsection.id}
-                        variant="ghost"
-                        className="w-full justify-start h-auto p-4 hover:bg-muted/50"
+                        className="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
                         onClick={() => handleSubsectionClick(subsection)}
                       >
-                        <div className="flex items-center gap-3 w-full">
-                          <div className="flex items-center gap-2">
-                            {isCompleted ? (
-                              <CheckCircle className="h-4 w-4 text-green-500" />
-                            ) : (
-                              <Circle className="h-4 w-4 text-muted-foreground" />
-                            )}
-                            {getSubsectionIcon(subsection)}
-                          </div>
-                          
-                          <div className="flex-1 text-left">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm text-muted-foreground">
-                                {sectionIndex + 1}.{subsectionIndex + 1}
-                              </span>
-                              <span className="font-medium">{subsection.title}</span>
-                            </div>
-                            {subsection.duration_minutes && (
-                              <span className="text-xs text-muted-foreground">
-                                {subsection.duration_minutes} minutes
-                              </span>
-                            )}
-                          </div>
-                          
-                          <div className="flex items-center gap-2">
-                            <Badge 
-                              variant={subsection.subsection_type === 'quiz' ? 'destructive' : 'secondary'}
-                              className="text-xs"
-                            >
-                              {getSubsectionTypeLabel(subsection)}
-                            </Badge>
-                          </div>
+                        <div className="flex items-center gap-2">
+                          {isCompleted ? (
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <Circle className="h-4 w-4 text-gray-400" />
+                          )}
+                          {getSubsectionIcon(subsection)}
                         </div>
-                      </Button>
+                        
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-500">
+                              {sectionIndex + 1}.{subsectionIndex + 1}
+                            </span>
+                            <span className="font-medium text-black">{subsection.title}</span>
+                          </div>
+                          {subsection.duration_minutes && (
+                            <span className="text-xs text-gray-500">
+                              {subsection.duration_minutes} minutes
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-500">
+                            {getSubsectionTypeLabel(subsection)}
+                          </span>
+                        </div>
+                      </button>
                     );
                   })}
                 </div>
-              </CardContent>
+              </div>
             </CollapsibleContent>
           </Collapsible>
-        </Card>
+        </div>
       ))}
     </div>
   );

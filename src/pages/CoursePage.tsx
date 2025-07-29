@@ -224,138 +224,135 @@ const CoursePage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/')}
-            className="mb-4"
+    <div className="max-w-[960px] mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="mb-8">
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/')}
+          className="mb-6 text-gray-600 hover:text-gray-800 p-0 h-auto"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Dashboard
+        </Button>
+
+        {/* Badges */}
+        <div className="flex items-center gap-3 mb-6">
+          <Badge 
+            variant="outline" 
+            className="bg-[#fa372c] text-white border-[#fa372c] px-3 py-1 text-sm font-medium"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
-          </Button>
-
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-4">
-                <Badge variant="outline" className="bg-primary/10 text-primary">
-                  Level {course.level}
-                </Badge>
-                <Badge variant="secondary">
-                  {hasStructuredContent ? 'Structured Course' : `${lessons.length} Lessons`}
-                </Badge>
-                {!hasStructuredContent && (
-                  <Badge variant="outline">
-                    <Clock className="h-3 w-3 mr-1" />
-                    {getTotalDuration()} min
-                  </Badge>
-                )}
-              </div>
-
-              <h1 className="text-3xl font-bold mb-4">{course.title}</h1>
-              
-              {course.description && (
-                <p className="text-lg text-muted-foreground mb-6">
-                  {course.description}
-                </p>
-              )}
-
-              {/* Progress Section */}
-              <Card className="mb-8">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="h-5 w-5" />
-                    Your Progress
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-muted-foreground">
-                      {getCompletedCount()} of {getTotalItems()} {hasStructuredContent ? 'items' : 'lessons'} completed
-                    </span>
-                    <span className="text-sm font-medium">{courseProgress}%</span>
-                  </div>
-                  <Progress value={courseProgress} className="h-2" />
-                </CardContent>
-              </Card>
-
-              {/* Certification Section */}
-              {courseProgress === 100 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <GraduationCap className="h-5 w-5" />
-                      Certification
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {!certificationWorkflow ? (
-                      <div className="space-y-3">
-                        <p className="text-muted-foreground">
-                          Congratulations! You've completed this course. Start your certification process.
-                        </p>
-                        <Button 
-                          onClick={() => navigate(`/certification/${course.level}/exam`)}
-                          className="w-full"
-                        >
-                          <GraduationCap className="h-4 w-4 mr-2" />
-                          Start Certification Process
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span>Certification Status:</span>
-                          <Badge variant="outline">{certificationWorkflow.current_step}</Badge>
-                        </div>
-                        
-                        {certificationWorkflow.current_step === 'exam' && certificationWorkflow.exam_status === 'pending_submission' && (
-                          <Button 
-                            onClick={() => navigate(`/certification/${course.level}/exam`)}
-                            className="w-full"
-                          >
-                            <FileText className="h-4 w-4 mr-2" />
-                            Take Certification Exam
-                          </Button>
-                        )}
-                        
-                        {certificationWorkflow.current_step === 'admin_approval' && certificationWorkflow.admin_approval_status === 'approved' && (
-                          <Button 
-                            onClick={() => navigate(`/certification/${course.level}/contract`)}
-                            className="w-full"
-                          >
-                            <FileText className="h-4 w-4 mr-2" />
-                            Sign Contract
-                          </Button>
-                        )}
-                        
-                        {certificationWorkflow.current_step === 'contract' && certificationWorkflow.contract_status === 'signed' && (
-                          <Button 
-                            onClick={() => navigate(`/certification/${course.level}/payment`)}
-                            className="w-full"
-                          >
-                            <GraduationCap className="h-4 w-4 mr-2" />
-                            Complete Payment
-                          </Button>
-                        )}
-                        
-                        {certificationWorkflow.subscription_status === 'active' && (
-                          <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 text-center">
-                            <div className="flex items-center justify-center gap-2 text-green-700 dark:text-green-300">
-                              <CheckCircle className="h-4 w-4" />
-                              <span className="font-medium">Certification Complete!</span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          </div>
+            Level {course.level}
+          </Badge>
+          <Badge 
+            variant="outline" 
+            className="bg-gray-100 text-gray-700 border-gray-300 px-3 py-1 text-sm"
+          >
+            {hasStructuredContent ? 'Structured Course' : `${lessons.length} Lessons`}
+          </Badge>
         </div>
+
+        {/* Title */}
+        <h1 className="text-[32px] font-bold text-black mb-4 leading-tight">
+          {course.title}
+        </h1>
+        
+        {/* Description */}
+        {course.description && (
+          <p className="text-gray-600 text-base mb-8 leading-relaxed">
+            {course.description}
+          </p>
+        )}
+
+        {/* Progress Section */}
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Target className="h-5 w-5 text-black" />
+            <h2 className="text-xl font-bold text-black">Your Progress</h2>
+          </div>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-gray-600 text-sm">
+              {getCompletedCount()} of {getTotalItems()} {hasStructuredContent ? 'items' : 'lessons'} completed
+            </span>
+            <span className="text-black font-bold text-lg">{courseProgress}%</span>
+          </div>
+          <Progress value={courseProgress} className="h-2 bg-gray-200" />
+        </div>
+
+        {/* Certification Section */}
+        {courseProgress === 100 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <GraduationCap className="h-5 w-5" />
+                Certification
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {!certificationWorkflow ? (
+                <div className="space-y-3">
+                  <p className="text-muted-foreground">
+                    Congratulations! You've completed this course. Start your certification process.
+                  </p>
+                  <Button 
+                    onClick={() => navigate(`/certification/${course.level}/exam`)}
+                    className="w-full"
+                  >
+                    <GraduationCap className="h-4 w-4 mr-2" />
+                    Start Certification Process
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span>Certification Status:</span>
+                    <Badge variant="outline">{certificationWorkflow.current_step}</Badge>
+                  </div>
+                  
+                  {certificationWorkflow.current_step === 'exam' && certificationWorkflow.exam_status === 'pending_submission' && (
+                    <Button 
+                      onClick={() => navigate(`/certification/${course.level}/exam`)}
+                      className="w-full"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Take Certification Exam
+                    </Button>
+                  )}
+                  
+                  {certificationWorkflow.current_step === 'admin_approval' && certificationWorkflow.admin_approval_status === 'approved' && (
+                    <Button 
+                      onClick={() => navigate(`/certification/${course.level}/contract`)}
+                      className="w-full"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Sign Contract
+                    </Button>
+                  )}
+                  
+                  {certificationWorkflow.current_step === 'contract' && certificationWorkflow.contract_status === 'signed' && (
+                    <Button 
+                      onClick={() => navigate(`/certification/${course.level}/payment`)}
+                      className="w-full"
+                    >
+                      <GraduationCap className="h-4 w-4 mr-2" />
+                      Complete Payment
+                    </Button>
+                  )}
+                  
+                  {certificationWorkflow.subscription_status === 'active' && (
+                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 text-center">
+                      <div className="flex items-center justify-center gap-2 text-green-700 dark:text-green-300">
+                        <CheckCircle className="h-4 w-4" />
+                        <span className="font-medium">Certification Complete!</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
         {/* Course Overview Stats */}
         {!hasStructuredContent && (
