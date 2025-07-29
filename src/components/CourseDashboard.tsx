@@ -314,6 +314,105 @@ const CourseDashboard = () => {
 
   // Check if training is completed (100% progress)
   const isTrainingCompleted = courseProgress.percentage === 100;
+  
+  // Check if exam is completed and admin approved
+  const certificationStatus = getCertificationStatus(1);
+  const isExamApproved = certificationStatus?.examStatus === 'passed' && certificationStatus?.adminApproval === 'approved';
+
+  // Dashboard for exam completed, ready for contract
+  if (isExamApproved) {
+    return (
+      <div className="max-w-[960px] mx-auto px-4 space-y-8">
+        {/* Header Section */}
+        <div className="text-left space-y-4">
+          <h1 className="text-4xl font-bold text-black">
+            MovingWaldo Certification Program
+          </h1>
+        </div>
+
+        {/* Contract Subtitle */}
+        <div>
+          <h2 className="text-2xl font-bold text-black">Certified Relocation Specialist Contract</h2>
+        </div>
+
+        {/* Contract Description */}
+        <div className="space-y-4">
+          <p className="text-black">
+            Congratulations! You passed the Level 1 Exam! You are now trained and ready to book well planned moves for your clients. To gain access to the live platform and get your certificate, all you need to do now is sign your contract with MovingWaldo and activate your monthly subscription plan.
+          </p>
+          
+          {/* Sign Contract Button */}
+          <div className="flex">
+            <Button 
+              style={{ backgroundColor: '#fa372c' }}
+              className="text-white hover:opacity-90 px-8 py-3 text-lg font-medium"
+              onClick={() => navigate('/contract-signing')}
+            >
+              Sign my Contract
+            </Button>
+          </div>
+        </div>
+
+        {/* Next Steps Section */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-black">Next Steps</h2>
+          
+          <div className="space-y-4">
+            {/* Contract */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+                <FileText className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-black">Contract</h3>
+                <p className="text-[#242526]">Review and sign the advisor agreement.</p>
+              </div>
+            </div>
+
+            {/* Subscription */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+                <FileText className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-black">Subscription</h3>
+                <p className="text-[#242526]">Choose a subscription plan to activate your certification.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Completed Section */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-black">Completed</h2>
+          
+          <div className="space-y-4">
+            {/* Training Completed */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+                <GraduationCap className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-black">Training</h3>
+                <p className="text-[#242526]">Complete the Level 1 training modules</p>
+              </div>
+            </div>
+
+            {/* Certification Exam Completed */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+                <FileText className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-black">Certification Exam</h3>
+                <p className="text-[#242526]">Pass the Level 1 exam to proceed.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Dashboard for training completed, ready for exam
   if (isTrainingCompleted) {
