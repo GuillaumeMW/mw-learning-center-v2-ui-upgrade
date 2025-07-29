@@ -9,7 +9,7 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Progress } from "./ui/progress";
 import { Loader2, GraduationCap, Target, BookOpen, ArrowRight, Lock, FileText, CheckCircle2, Clock } from "lucide-react";
-import certificateBadge from "@/assets/mw_certificate_l1.png";
+import certificateBadge from "@/assets/certificate-level1.png";
 import CertificationWorkflowCards from "./CertificationWorkflowCards";
 
 interface CourseWithNestedContent extends Course {
@@ -224,6 +224,95 @@ const CourseDashboard = () => {
   const courseProgress = currentCourse ? getCourseProgress(currentCourse) : { percentage: 0, completed: 0, total: 0 };
   const hasStarted = hasStartedAnyCourse();
 
+  // For first-time users (no progress), show the new design
+  if (!hasStarted) {
+    return (
+      <div className="max-w-[960px] mx-auto px-4 space-y-8">
+        {/* Header Section */}
+        <div className="text-left space-y-4">
+          <h1 className="text-4xl font-bold text-black">
+            MovingWaldo Certification Program
+          </h1>
+          <p className="text-black">
+            Welcome to the MovingWaldo RS Certification Program! This program is designed to equip you with the knowledge and skills needed to become a certified advisor, helping clients coordinate their moves with confidence and expertise.
+          </p>
+        </div>
+
+        {/* Certification Badge */}
+        <div className="flex">
+          <img 
+            src={certificateBadge} 
+            alt="Level 1 Certification Badge"
+            className="w-auto h-24"
+          />
+        </div>
+
+        {/* Certification Process */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-black">Level 1 Certification Process</h2>
+          
+          <div className="space-y-4">
+            {/* Training */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+                <GraduationCap className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-black">Training</h3>
+                <p className="text-[#242526]">Complete the Level 1 training modules</p>
+              </div>
+            </div>
+
+            {/* Exam */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+                <FileText className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-black">Exam</h3>
+                <p className="text-[#242526]">Pass the Level 1 exam to proceed.</p>
+              </div>
+            </div>
+
+            {/* Contract */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+                <FileText className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-black">Contract</h3>
+                <p className="text-[#242526]">Review and sign the advisor agreement.</p>
+              </div>
+            </div>
+
+            {/* Subscription */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+                <FileText className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-black">Subscription</h3>
+                <p className="text-[#242526]">Choose a subscription plan to activate your certification.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Start Training Button */}
+        <div className="flex">
+          <Button 
+            style={{ backgroundColor: '#fa372c' }}
+            className="text-white hover:opacity-90 px-8 py-3 text-lg font-medium"
+            onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
+          >
+            Start Level 1 Training
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Original dashboard for users with progress
   return (
     <div className="space-y-12">
       {/* Welcome Section */}
@@ -323,7 +412,7 @@ const CourseDashboard = () => {
       )}
 
       {/* Certification Workflow Cards */}
-      {currentCourse && hasStarted && (
+      {currentCourse && (
         <div className="max-w-6xl mx-auto">
           <CertificationWorkflowCards 
             course={{
