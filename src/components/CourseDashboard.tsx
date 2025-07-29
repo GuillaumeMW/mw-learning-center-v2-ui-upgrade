@@ -312,7 +312,105 @@ const CourseDashboard = () => {
     );
   }
 
-  // Dashboard for users with progress (training started)
+  // Check if training is completed (100% progress)
+  const isTrainingCompleted = courseProgress.percentage === 100;
+
+  // Dashboard for training completed, ready for exam
+  if (isTrainingCompleted) {
+    return (
+      <div className="max-w-[960px] mx-auto px-4 space-y-8">
+        {/* Header Section */}
+        <div className="text-left space-y-4">
+          <h1 className="text-4xl font-bold text-black">
+            MovingWaldo Certification Program
+          </h1>
+        </div>
+
+        {/* Certification Exam Subtitle */}
+        <div>
+          <h2 className="text-2xl font-bold text-black">Certification Exam Level 1</h2>
+        </div>
+
+        {/* Exam Description */}
+        <div className="space-y-4">
+          <p className="text-black">
+            Congratulations on completing the training modules! You're now ready to take the Level 1 Exam. This exam assesses your understanding of the material covered in the training and is a crucial step towards becoming a certified MovingWaldo advisor. You have 3 attempts remaining to pass the exam.
+          </p>
+          
+          {/* Start Certification Exam Button */}
+          <div className="flex">
+            <Button 
+              style={{ backgroundColor: '#fa372c' }}
+              className="text-white hover:opacity-90 px-8 py-3 text-lg font-medium"
+              onClick={() => navigate('/certification-exam/1')}
+            >
+              Start Certification Exam
+            </Button>
+          </div>
+        </div>
+
+        {/* Next Steps Section */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-black">Next Steps</h2>
+          
+          <div className="space-y-4">
+            {/* Certification Exam */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+                <FileText className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-black">Certification Exam</h3>
+                <p className="text-[#242526]">Pass the Level 1 exam to proceed.</p>
+              </div>
+            </div>
+
+            {/* Contract */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+                <FileText className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-black">Contract</h3>
+                <p className="text-[#242526]">Review and sign the advisor agreement.</p>
+              </div>
+            </div>
+
+            {/* Subscription */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+                <FileText className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-black">Subscription</h3>
+                <p className="text-[#242526]">Choose a subscription plan to activate your certification.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Completed Section */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-black">Completed</h2>
+          
+          <div className="space-y-4">
+            {/* Training Completed */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+                <GraduationCap className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-black">Training</h3>
+                <p className="text-[#242526]">Complete the Level 1 training modules</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Dashboard for users with progress (training started but not completed)
   return (
     <div className="max-w-[960px] mx-auto px-4 space-y-8">
       {/* Header Section */}
