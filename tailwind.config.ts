@@ -19,7 +19,7 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				'helvetica': ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+				'nexa': ['Nunito Sans', 'sans-serif'],
 				'open-sans': ['Open Sans', 'sans-serif'],
 			},
 			colors: {
