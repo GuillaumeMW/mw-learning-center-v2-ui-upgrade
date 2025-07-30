@@ -230,7 +230,7 @@ const CourseDashboard = () => {
       <div className="max-w-[960px] mx-auto px-4 space-y-8">
         {/* Header Section */}
         <div className="text-left space-y-4">
-          <h1 className="text-2xl font-bold text-black">
+          <h1 className="text-3xl font-bold text-black">
             MovingWaldo Certification Program
           </h1>
           <p className="text-black">
@@ -328,7 +328,7 @@ const CourseDashboard = () => {
       <div className="max-w-[960px] mx-auto px-4 space-y-8">
         {/* Header Section */}
         <div className="text-left space-y-4">
-          <h1 className="text-2xl font-bold text-black">
+          <h1 className="text-3xl font-bold text-black">
             MovingWaldo Certification Program
           </h1>
         </div>
@@ -423,7 +423,7 @@ const CourseDashboard = () => {
       <div className="max-w-[960px] mx-auto px-4 space-y-8">
         {/* Header Section */}
         <div className="text-left space-y-4">
-          <h1 className="text-2xl font-bold text-black">
+          <h1 className="text-3xl font-bold text-black">
             MovingWaldo Certification Program
           </h1>
         </div>
@@ -518,7 +518,7 @@ const CourseDashboard = () => {
       <div className="max-w-[960px] mx-auto px-4 space-y-8">
         {/* Header Section */}
         <div className="text-left space-y-4">
-          <h1 className="text-2xl font-bold text-black">
+          <h1 className="text-3xl font-bold text-black">
             MovingWaldo Certification Program
           </h1>
         </div>
@@ -612,7 +612,7 @@ const CourseDashboard = () => {
     <div className="max-w-[960px] mx-auto px-4 space-y-8">
       {/* Header Section */}
       <div className="text-left space-y-4">
-        <h1 className="text-2xl font-bold text-black">
+        <h1 className="text-3xl font-bold text-black">
           MovingWaldo Certification Program
         </h1>
       </div>
