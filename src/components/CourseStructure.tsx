@@ -233,9 +233,9 @@ export const CourseStructure = ({ courseId }: CourseStructureProps) => {
   }
 
   return (
-    <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-5 gap-6">
       {/* Sidebar Navigation */}
-      <div className="lg:col-span-1">
+      <div className="lg:col-span-2">
         <Card className="border border-gray-200 sticky top-6">
           <CardContent className="p-4">
             <h3 className="font-semibold text-black mb-4">Course Content</h3>
