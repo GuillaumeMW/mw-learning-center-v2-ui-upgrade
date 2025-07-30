@@ -539,7 +539,7 @@ const CourseDashboard = () => {
             <Button 
               style={{ backgroundColor: '#fa372c' }}
               className="text-white hover:opacity-90 px-8 py-3 text-lg font-medium"
-              onClick={() => navigate('/certification-exam/1')}
+              onClick={() => navigate('/certification/1/exam')}
             >
               Start Certification Exam
             </Button>
