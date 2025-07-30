@@ -180,7 +180,12 @@ export const SubsectionPage = () => {
       const { data: courseSubsections, error: subsectionsError } = await supabase
         .from('subsections')
         .select('id')
-        .in('section_id', allSubsections.map(s => s.section_id));
+        .in('section_id', (
+          await supabase
+            .from('sections')
+            .select('id')
+            .eq('course_id', courseId)
+        ).data?.map(s => s.id) || []);
 
       if (subsectionsError) throw subsectionsError;
 
