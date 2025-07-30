@@ -152,6 +152,10 @@ export const SubsectionPage = () => {
       if (error) throw error;
 
       setIsCompleted(true);
+      
+      // Check if user has completed all subsections and create certification workflow if needed
+      await checkAndCreateCertificationWorkflow();
+      
       toast({
         title: "Subsection Completed!",
         description: `Great job completing "${subsection.title}"`,
@@ -165,6 +169,76 @@ export const SubsectionPage = () => {
       });
     } finally {
       setCompleting(false);
+    }
+  };
+
+  const checkAndCreateCertificationWorkflow = async () => {
+    if (!user || !courseId) return;
+
+    try {
+      // Get all subsections for this course
+      const { data: courseSubsections, error: subsectionsError } = await supabase
+        .from('subsections')
+        .select('id')
+        .in('section_id', allSubsections.map(s => s.section_id));
+
+      if (subsectionsError) throw subsectionsError;
+
+      // Get user's completed subsections for this course
+      const { data: completedProgress, error: progressError } = await supabase
+        .from('user_progress')
+        .select('subsection_id')
+        .eq('user_id', user.id)
+        .eq('course_id', courseId)
+        .not('completed_at', 'is', null);
+
+      if (progressError) throw progressError;
+
+      const totalSubsections = courseSubsections.length;
+      const completedSubsections = completedProgress.filter(p => p.subsection_id).length;
+
+      // If all subsections are completed, check if certification workflow exists
+      if (totalSubsections > 0 && completedSubsections >= totalSubsections) {
+        // Get course details to get the level
+        const { data: courseData, error: courseError } = await supabase
+          .from('courses')
+          .select('level')
+          .eq('id', courseId)
+          .single();
+
+        if (courseError) throw courseError;
+
+        // Check if certification workflow already exists
+        const { data: existingWorkflow, error: workflowError } = await supabase
+          .from('certification_workflows')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('level', courseData.level)
+          .maybeSingle();
+
+        if (workflowError) throw workflowError;
+
+        // Create certification workflow if it doesn't exist
+        if (!existingWorkflow) {
+          const { error: createError } = await supabase
+            .from('certification_workflows')
+            .insert({
+              user_id: user.id,
+              course_id: courseId,
+              level: courseData.level,
+              current_step: 'exam',
+              exam_status: 'pending_submission',
+              admin_approval_status: 'pending',
+              contract_status: 'not_required',
+              subscription_status: 'not_required'
+            });
+
+          if (createError) throw createError;
+        }
+      }
+    } catch (error) {
+      console.error('Error checking/creating certification workflow:', error);
+      // Don't show error to user as this is a background process
     }
   };
 
