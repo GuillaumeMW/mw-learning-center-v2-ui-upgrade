@@ -233,184 +233,161 @@ export const CourseStructure = ({ courseId }: CourseStructureProps) => {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-      {/* Sidebar Navigation */}
-      <div className="lg:col-span-1">
-        <Card className="border border-gray-200 sticky top-6">
-          <CardContent className="p-4">
-            <h3 className="font-semibold text-black mb-4">Course Content</h3>
-            <div className="space-y-2">
-              {sections.map((section) => (
-                <div key={section.id} className="space-y-1">
-                  <div 
-                    className={`flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-gray-50 ${
-                      expandedSections.has(section.id) ? 'bg-gray-50' : ''
-                    }`}
-                    onClick={() => toggleSection(section.id)}
-                  >
-                    <span className="text-sm font-medium text-gray-700">{section.title}</span>
-                    {expandedSections.has(section.id) ? (
-                      <ChevronDown className="h-4 w-4 text-gray-500" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4 text-gray-500" />
+    <div className="w-full">
+      {selectedSubsection ? (
+        <Card className="border border-gray-200">
+          <CardContent className="p-6">
+            {/* Subsection Header */}
+            <div className="border-b border-gray-200 pb-4 mb-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold text-black mb-2">{selectedSubsection.title}</h1>
+                  <div className="flex items-center gap-4 text-sm text-gray-600">
+                    {selectedSubsection.duration_minutes && (
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        {selectedSubsection.duration_minutes} min
+                      </span>
                     )}
+                    <span className="flex items-center gap-1">
+                      <BookOpen className="h-4 w-4" />
+                      {selectedSubsection.subsection_type === 'quiz' ? 'Quiz' : 'Content'}
+                    </span>
                   </div>
-                  
-                  {expandedSections.has(section.id) && (
-                    <div className="ml-4 space-y-1">
-                      {section.subsections?.map((subsection) => {
-                        const isCompleted = completedItems.has(subsection.id);
-                        return (
-                          <div
-                            key={subsection.id}
-                            className={`flex items-center gap-2 p-2 rounded text-xs cursor-pointer hover:bg-gray-100 ${
-                              selectedSubsection?.id === subsection.id ? 'bg-primary/10 text-primary' : 'text-gray-600'
-                            }`}
-                            onClick={() => handleSubsectionClick(subsection)}
-                          >
-                            <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                              isCompleted ? 'bg-green-500' : 'bg-gray-300'
-                            }`} />
-                            <span className="truncate">{subsection.title}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
                 </div>
-              ))}
+                <div className="flex items-center gap-2">
+                  {completedItems.has(selectedSubsection.id) && (
+                    <Badge variant="outline" className="text-green-600 border-green-600">
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      Completed
+                    </Badge>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleMarkComplete(selectedSubsection.id)}
+                    disabled={completedItems.has(selectedSubsection.id)}
+                  >
+                    {completedItems.has(selectedSubsection.id) ? "Completed" : "Mark Complete"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Content Display */}
+            <div className="space-y-6">
+              {selectedSubsection.video_url && (
+                <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                  <VideoPlayer 
+                    videoUrl={selectedSubsection.video_url}
+                    onProgress={() => {}}
+                    onComplete={() => handleMarkComplete(selectedSubsection.id)}
+                  />
+                </div>
+              )}
+
+              {selectedSubsection.content && (
+                <div 
+                  className="prose prose-gray max-w-none"
+                  dangerouslySetInnerHTML={{ __html: selectedSubsection.content }}
+                />
+              )}
+
+              {selectedSubsection.subsection_type === 'quiz' && selectedSubsection.quiz_url && (
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <iframe
+                    src={selectedSubsection.quiz_url}
+                    width="100%"
+                    height={selectedSubsection.quiz_height || 800}
+                    frameBorder="0"
+                    allowFullScreen
+                    title={`Quiz: ${selectedSubsection.title}`}
+                    className="w-full"
+                  />
+                </div>
+              )}
+
+              {/* Attachments */}
+              {attachments.length > 0 && (
+                <div className="border-t border-gray-200 pt-6">
+                  <h3 className="font-semibold text-black mb-4 flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Attachments
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {attachments.map((attachment) => (
+                      <a
+                        key={attachment.id}
+                        href={attachment.file_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        <FileText className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {attachment.display_name || attachment.file_name}
+                          </p>
+                          {attachment.file_size && (
+                            <p className="text-xs text-gray-500">
+                              {(attachment.file_size / 1024 / 1024).toFixed(2)} MB
+                            </p>
+                          )}
+                        </div>
+                        <Download className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Comments Section */}
+              <div className="border-t border-gray-200 pt-6">
+                <CommentThread 
+                  subsectionId={selectedSubsection.id}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
-      </div>
+      ) : (
+        <Card className="border border-gray-200">
+          <CardContent className="p-12 text-center">
+            <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Select a lesson to begin</h3>
+            <p className="text-gray-600">Choose a section from the navigation to start learning.</p>
+          </CardContent>
+        </Card>
+      )}
 
-      {/* Main Content Area */}
-      <div className="lg:col-span-3">
-        {selectedSubsection ? (
-          <Card className="border border-gray-200">
-            <CardContent className="p-6">
-              {/* Subsection Header */}
-              <div className="border-b border-gray-200 pb-4 mb-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h1 className="text-2xl font-bold text-black mb-2">{selectedSubsection.title}</h1>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      {selectedSubsection.duration_minutes && (
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          {selectedSubsection.duration_minutes} min
-                        </span>
-                      )}
-                      <span className="flex items-center gap-1">
-                        <BookOpen className="h-4 w-4" />
-                        {selectedSubsection.subsection_type === 'quiz' ? 'Quiz' : 'Content'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {completedItems.has(selectedSubsection.id) && (
-                      <Badge variant="outline" className="text-green-600 border-green-600">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        Completed
-                      </Badge>
-                    )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleMarkComplete(selectedSubsection.id)}
-                      disabled={completedItems.has(selectedSubsection.id)}
-                    >
-                      {completedItems.has(selectedSubsection.id) ? "Completed" : "Mark Complete"}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Content Display */}
-              <div className="space-y-6">
-                {selectedSubsection.video_url && (
-                  <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                    <VideoPlayer 
-                      videoUrl={selectedSubsection.video_url}
-                      onProgress={() => {}}
-                      onComplete={() => handleMarkComplete(selectedSubsection.id)}
-                    />
-                  </div>
-                )}
-
-                {selectedSubsection.content && (
-                  <div 
-                    className="prose prose-gray max-w-none"
-                    dangerouslySetInnerHTML={{ __html: selectedSubsection.content }}
-                  />
-                )}
-
-                {selectedSubsection.subsection_type === 'quiz' && selectedSubsection.quiz_url && (
-                  <div className="border border-gray-200 rounded-lg overflow-hidden">
-                    <iframe
-                      src={selectedSubsection.quiz_url}
-                      width="100%"
-                      height={selectedSubsection.quiz_height || 800}
-                      frameBorder="0"
-                      allowFullScreen
-                      title={`Quiz: ${selectedSubsection.title}`}
-                      className="w-full"
-                    />
-                  </div>
-                )}
-
-                {/* Attachments */}
-                {attachments.length > 0 && (
-                  <div className="border-t border-gray-200 pt-6">
-                    <h3 className="font-semibold text-black mb-4 flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      Attachments
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {attachments.map((attachment) => (
-                        <a
-                          key={attachment.id}
-                          href={attachment.file_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                          <FileText className="h-5 w-5 text-gray-500 flex-shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">
-                              {attachment.display_name || attachment.file_name}
-                            </p>
-                            {attachment.file_size && (
-                              <p className="text-xs text-gray-500">
-                                {(attachment.file_size / 1024 / 1024).toFixed(2)} MB
-                              </p>
-                            )}
-                          </div>
-                          <Download className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Comments Section */}
-                <div className="border-t border-gray-200 pt-6">
-                  <CommentThread 
-                    subsectionId={selectedSubsection.id}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card className="border border-gray-200">
-            <CardContent className="p-12 text-center">
-              <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Select a lesson to begin</h3>
-              <p className="text-gray-600">Choose a section from the navigation to start learning.</p>
-            </CardContent>
-          </Card>
-        )}
+      {/* Navigation between subsections */}
+      <div className="mt-6 flex justify-between">
+        <Button
+          variant="outline"
+          onClick={() => {
+            const allSubsections = sections.flatMap(s => s.subsections || []);
+            const currentIndex = allSubsections.findIndex(sub => sub.id === selectedSubsection?.id);
+            if (currentIndex > 0) {
+              setSelectedSubsection(allSubsections[currentIndex - 1]);
+            }
+          }}
+          disabled={!selectedSubsection || sections.flatMap(s => s.subsections || []).findIndex(sub => sub.id === selectedSubsection.id) === 0}
+        >
+          Previous
+        </Button>
+        
+        <Button
+          onClick={() => {
+            const allSubsections = sections.flatMap(s => s.subsections || []);
+            const currentIndex = allSubsections.findIndex(sub => sub.id === selectedSubsection?.id);
+            if (currentIndex < allSubsections.length - 1) {
+              setSelectedSubsection(allSubsections[currentIndex + 1]);
+            }
+          }}
+          disabled={!selectedSubsection || sections.flatMap(s => s.subsections || []).findIndex(sub => sub.id === selectedSubsection.id) === sections.flatMap(s => s.subsections || []).length - 1}
+        >
+          Next
+        </Button>
       </div>
     </div>
   );
