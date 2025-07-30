@@ -349,7 +349,7 @@ const CourseDashboard = () => {
             <Button 
               style={{ backgroundColor: '#fa372c' }}
               className="text-white hover:opacity-90 px-8 py-3 text-lg font-medium"
-              onClick={() => navigate('/subscription-payment/1')}
+              onClick={() => navigate('/certification/1/payment')}
             >
               Activate My Subscription
             </Button>
