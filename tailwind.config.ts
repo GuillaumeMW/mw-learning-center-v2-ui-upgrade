@@ -19,8 +19,7 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				'nexa': ['Nunito Sans', 'sans-serif'],
-				'open-sans': ['Open Sans', 'sans-serif'],
+				'sans': ['Manrope', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
