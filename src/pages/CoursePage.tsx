@@ -224,7 +224,7 @@ const CoursePage = () => {
   }
 
   return (
-    <div className="max-w-[960px] mx-auto px-4 py-8">
+    <div className="max-w-[1400px] mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
         <Button 
