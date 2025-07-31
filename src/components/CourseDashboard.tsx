@@ -253,7 +253,10 @@ const CourseDashboard = () => {
           
           <div className="space-y-4">
             {/* Training */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <GraduationCap className="w-6 h-6 text-black" />
               </div>
@@ -264,7 +267,10 @@ const CourseDashboard = () => {
             </div>
 
             {/* Exam */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => navigate('/certification/1/exam')}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <ClipboardCheck className="w-6 h-6 text-black" />
               </div>
@@ -275,7 +281,10 @@ const CourseDashboard = () => {
             </div>
 
             {/* Contract */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => navigate('/contract-signing')}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <FileSignature className="w-6 h-6 text-black" />
               </div>
@@ -286,7 +295,10 @@ const CourseDashboard = () => {
             </div>
 
             {/* Subscription */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => navigate('/certification/1/payment')}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <CreditCard className="w-6 h-6 text-black" />
               </div>
@@ -362,7 +374,10 @@ const CourseDashboard = () => {
           
           <div className="space-y-4">
             {/* Subscription */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => navigate('/certification/1/payment')}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <CreditCard className="w-6 h-6 text-black" />
               </div>
@@ -380,7 +395,10 @@ const CourseDashboard = () => {
           
           <div className="space-y-4">
             {/* Training Completed */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <GraduationCap className="w-6 h-6 text-black" />
               </div>
@@ -391,7 +409,10 @@ const CourseDashboard = () => {
             </div>
 
             {/* Certification Exam Completed */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => navigate('/certification/1/exam')}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <ClipboardCheck className="w-6 h-6 text-black" />
               </div>
@@ -402,7 +423,10 @@ const CourseDashboard = () => {
             </div>
 
             {/* Contract Completed */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => navigate('/contract-signing')}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <FileSignature className="w-6 h-6 text-black" />
               </div>
@@ -457,7 +481,10 @@ const CourseDashboard = () => {
           
           <div className="space-y-4">
             {/* Contract */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => navigate('/contract-signing')}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <FileSignature className="w-6 h-6 text-black" />
               </div>
@@ -468,7 +495,10 @@ const CourseDashboard = () => {
             </div>
 
             {/* Subscription */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => navigate('/certification/1/payment')}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <CreditCard className="w-6 h-6 text-black" />
               </div>
@@ -486,7 +516,10 @@ const CourseDashboard = () => {
           
           <div className="space-y-4">
             {/* Training Completed */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <GraduationCap className="w-6 h-6 text-black" />
               </div>
@@ -497,7 +530,10 @@ const CourseDashboard = () => {
             </div>
 
             {/* Certification Exam Completed */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => navigate('/certification/1/exam')}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <ClipboardCheck className="w-6 h-6 text-black" />
               </div>
@@ -552,7 +588,10 @@ const CourseDashboard = () => {
           
           <div className="space-y-4">
             {/* Certification Exam */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => navigate('/certification/1/exam')}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <ClipboardCheck className="w-6 h-6 text-black" />
               </div>
@@ -563,7 +602,10 @@ const CourseDashboard = () => {
             </div>
 
             {/* Contract */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => navigate('/contract-signing')}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <FileSignature className="w-6 h-6 text-black" />
               </div>
@@ -574,7 +616,10 @@ const CourseDashboard = () => {
             </div>
 
             {/* Subscription */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => navigate('/certification/1/payment')}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <CreditCard className="w-6 h-6 text-black" />
               </div>
@@ -592,7 +637,10 @@ const CourseDashboard = () => {
           
           <div className="space-y-4">
             {/* Training Completed */}
-            <div className="flex items-start gap-4">
+            <div 
+              className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+              onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
+            >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <GraduationCap className="w-6 h-6 text-black" />
               </div>
@@ -655,7 +703,10 @@ const CourseDashboard = () => {
         
         <div className="space-y-4">
           {/* Certification Exam */}
-          <div className="flex items-start gap-4">
+          <div 
+            className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+            onClick={() => navigate('/certification/1/exam')}
+          >
             <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
               <ClipboardCheck className="w-6 h-6 text-black" />
             </div>
@@ -666,7 +717,10 @@ const CourseDashboard = () => {
           </div>
 
           {/* Contract */}
-          <div className="flex items-start gap-4">
+          <div 
+            className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+            onClick={() => navigate('/contract-signing')}
+          >
             <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
               <FileSignature className="w-6 h-6 text-black" />
             </div>
@@ -677,7 +731,10 @@ const CourseDashboard = () => {
           </div>
 
           {/* Subscription */}
-          <div className="flex items-start gap-4">
+          <div 
+            className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+            onClick={() => navigate('/certification/1/payment')}
+          >
             <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
               <CreditCard className="w-6 h-6 text-black" />
             </div>
