@@ -35,7 +35,7 @@ const CertificationWorkflowCards = ({
   course, 
   courseProgress, 
   certificationWorkflow 
-}: CertificationWorkflowCardsProps) => {
+}: CertificationWorkflowCardsProps) => { 
   const navigate = useNavigate();
 
   // Debug logging to see what data we're receiving
