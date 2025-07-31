@@ -538,7 +538,7 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
                    <div className="grid grid-cols-2 gap-2">
                      <div className="space-y-1">
                        <Input
-                         placeholder={provinceState && isCanadianProvince(provinceState) ? "A1A 1A1" : "12345"}
+                         placeholder="Postal/Zip Code"
                          value={postalCode}
                          onChange={(e) => handlePostalCodeChange(e.target.value)}
                          className={postalCodeError ? 'border-red-500' : ''}
