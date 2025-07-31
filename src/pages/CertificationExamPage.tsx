@@ -25,7 +25,6 @@ const CertificationExamPage = () => {
   const [allSectionsCompleted, setAllSectionsCompleted] = useState(false);
   const [course, setCourse] = useState<any>(null);
   const [hasStartedCertification, setHasStartedCertification] = useState(false);
-  const [firstSubsectionId, setFirstSubsectionId] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && level) {
@@ -50,22 +49,10 @@ const CertificationExamPage = () => {
           .select(`
             id,
             subsections (
-              id,
-              order_index
+              id
             )
           `)
-          .eq('course_id', courseData.id)
-          .order('order_index');
-
-        // Get the first subsection ID for navigation
-        if (sectionsData && sectionsData.length > 0) {
-          const firstSection = sectionsData[0];
-          if (firstSection.subsections && firstSection.subsections.length > 0) {
-            // Sort subsections by order_index and get the first one
-            const sortedSubsections = firstSection.subsections.sort((a: any, b: any) => a.order_index - b.order_index);
-            setFirstSubsectionId(sortedSubsections[0].id);
-          }
-        }
+          .eq('course_id', courseData.id);
 
         // Get user progress for all subsections
         const allSubsectionIds = sectionsData?.flatMap(s => s.subsections.map(sub => sub.id)) || [];
@@ -282,8 +269,7 @@ const CertificationExamPage = () => {
               <Button 
                 variant="outline" 
                 className="mt-4"
-                onClick={() => firstSubsectionId ? navigate(`/course/${firstSubsectionId}`) : navigate('/')}
-                disabled={!firstSubsectionId}
+                onClick={() => course?.id ? navigate(`/course/${course.id}`) : navigate('/')}
               >
                 Return to Course
               </Button>
