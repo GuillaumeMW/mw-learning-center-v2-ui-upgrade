@@ -391,7 +391,10 @@ const CoursePage = () => {
 
         {/* Course Content */}
         {hasStructuredContent ? (
-          <CourseStructure courseId={courseId!} />
+          <CourseStructure 
+            courseId={courseId!} 
+            onProgressUpdate={fetchCourseData}
+          />
         ) : (
           /* Lessons List - Fallback for old structure */
           <Card>

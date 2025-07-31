@@ -24,9 +24,10 @@ import {
 
 interface CourseStructureProps {
   courseId: string;
+  onProgressUpdate?: () => void;
 }
 
-export const CourseStructure = ({ courseId }: CourseStructureProps) => {
+export const CourseStructure = ({ courseId, onProgressUpdate }: CourseStructureProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -177,6 +178,9 @@ export const CourseStructure = ({ courseId }: CourseStructureProps) => {
 
       // Refresh progress
       fetchUserProgress();
+      
+      // Notify parent component of progress update
+      onProgressUpdate?.();
       
       toast({
         title: "Progress Saved",
