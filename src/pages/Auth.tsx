@@ -7,8 +7,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, GraduationCap, Mail, Lock, User, MapPin, Briefcase, Phone, Globe } from "lucide-react";
+import { Eye, EyeOff, GraduationCap, Mail, Lock, User, MapPin, Briefcase, Phone, Globe, Info } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface AuthPageProps {
   defaultTab?: 'login' | 'signup';
@@ -28,6 +29,7 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneNumberError, setPhoneNumberError] = useState('');
   const [postalCodeError, setPostalCodeError] = useState('');
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [addressLine1, setAddressLine1] = useState('');
   const [addressLine2, setAddressLine2] = useState('');
   const [city, setCity] = useState('');
@@ -188,6 +190,37 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
     }
   };
 
+  // Password validation
+  const validatePassword = (password: string) => {
+    const errors: string[] = [];
+    
+    if (!/[A-Z]/.test(password)) {
+      errors.push('At least one uppercase letter');
+    }
+    if (!/[a-z]/.test(password)) {
+      errors.push('At least one lowercase letter');
+    }
+    if (!/\d/.test(password)) {
+      errors.push('At least one digit');
+    }
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      errors.push('At least one special character');
+    }
+    if (password.length < 8) {
+      errors.push('At least 8 characters long');
+    }
+    
+    return errors;
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    if (activeTab === 'signup') {
+      const errors = validatePassword(value);
+      setPasswordErrors(errors);
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -244,6 +277,13 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
       }
     }
 
+    // Validate password
+    if (passwordErrors.length > 0) {
+      setError('Password does not meet requirements');
+      setLoading(false);
+      return;
+    }
+
     const { error } = await signUp(email, password, {
       first_name: firstName,
       last_name: lastName,
@@ -286,6 +326,7 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
     setPhoneNumber('');
     setPhoneNumberError('');
     setPostalCodeError('');
+    setPasswordErrors([]);
     setAddressLine1('');
     setAddressLine2('');
     setCity('');
@@ -444,7 +485,28 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="signupPassword">Password *</Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="signupPassword">Password *</Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <div className="space-y-1">
+                            <p className="font-medium">Password requirements:</p>
+                            <ul className="text-xs space-y-1">
+                              <li>• At least 8 characters long</li>
+                              <li>• At least one uppercase letter (A-Z)</li>
+                              <li>• At least one lowercase letter (a-z)</li>
+                              <li>• At least one digit (0-9)</li>
+                              <li>• At least one special character (!@#$%^&*)</li>
+                            </ul>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -452,10 +514,10 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
                       type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10"
+                      onChange={(e) => handlePasswordChange(e.target.value)}
+                      className={`pl-10 pr-10 ${passwordErrors.length > 0 ? 'border-red-500' : password && passwordErrors.length === 0 ? 'border-green-500' : ''}`}
                       required
-                      minLength={6}
+                      minLength={8}
                     />
                     <button
                       type="button"
@@ -465,6 +527,16 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
+                  {passwordErrors.length > 0 && (
+                    <div className="space-y-1">
+                      {passwordErrors.map((error, index) => (
+                        <p key={index} className="text-sm text-red-600">• {error}</p>
+                      ))}
+                    </div>
+                  )}
+                  {password && passwordErrors.length === 0 && (
+                    <p className="text-sm text-green-600">✓ Password meets all requirements</p>
+                  )}
                 </div>
 
                 <Separator />
