@@ -203,7 +203,15 @@ export const SubsectionPage = () => {
       const completedSubsections = completedProgress.filter(p => p.subsection_id).length;
 
       // If all subsections are completed, check if certification workflow exists
+      console.log('Checking workflow creation:', { 
+        totalSubsections, 
+        completedSubsections, 
+        shouldCreate: totalSubsections > 0 && completedSubsections >= totalSubsections 
+      });
+      
       if (totalSubsections > 0 && completedSubsections >= totalSubsections) {
+        console.log('All subsections completed, checking for existing workflow...');
+        
         // Get course details to get the level
         const { data: courseData, error: courseError } = await supabase
           .from('courses')
@@ -211,7 +219,12 @@ export const SubsectionPage = () => {
           .eq('id', courseId)
           .single();
 
-        if (courseError) throw courseError;
+        if (courseError) {
+          console.error('Error getting course data:', courseError);
+          throw courseError;
+        }
+        
+        console.log('Course data:', courseData);
 
         // Check if certification workflow already exists
         const { data: existingWorkflow, error: workflowError } = await supabase
@@ -221,10 +234,16 @@ export const SubsectionPage = () => {
           .eq('level', courseData.level)
           .maybeSingle();
 
-        if (workflowError) throw workflowError;
+        if (workflowError) {
+          console.error('Error checking existing workflow:', workflowError);
+          throw workflowError;
+        }
+        
+        console.log('Existing workflow check:', existingWorkflow);
 
         // Create certification workflow if it doesn't exist
         if (!existingWorkflow) {
+          console.log('Creating new certification workflow...');
           const { error: createError } = await supabase
             .from('certification_workflows')
             .insert({
@@ -238,7 +257,14 @@ export const SubsectionPage = () => {
               subscription_status: 'not_required'
             });
 
-          if (createError) throw createError;
+          if (createError) {
+            console.error('Error creating certification workflow:', createError);
+            throw createError;
+          } else {
+            console.log('Certification workflow created successfully!');
+          }
+        } else {
+          console.log('Certification workflow already exists');
         }
       }
     } catch (error) {
