@@ -79,10 +79,9 @@ const CertificationExamPage = () => {
         }
 
         const certificationExists = !!workflowData;
-        setHasStartedCertification(certificationExists);
-        setWorkflow(workflowData);
 
-        // NEW: If all sections are completed and no workflow entry exists, create one
+        // ----- REVISED LOGIC -----
+        // Only attempt to insert if a workflow doesn't exist and prerequisites are met.
         if (allCompleted && !certificationExists) {
             const { error: insertError } = await supabase
                 .from('certification_workflows')
@@ -90,8 +89,8 @@ const CertificationExamPage = () => {
                     user_id: user.id,
                     level: levelNum,
                     course_id: courseData.id,
-                    current_step: 'exam', // Set the initial step
-                    exam_status: 'pending_submission', // Ready for submission
+                    current_step: 'exam',
+                    exam_status: 'pending_submission',
                     admin_approval_status: 'pending',
                     contract_status: 'not_required',
                     subscription_status: 'not_required',
@@ -105,32 +104,33 @@ const CertificationExamPage = () => {
                     variant: 'destructive',
                 });
             } else {
-                // After successful creation, re-fetch the workflow to update state
-                await fetchExamDetails();
                 toast({
                     title: 'Certification Started',
                     description: 'Your certification process has begun!',
                 });
-                return; // Exit early to avoid infinite recursion
+                // Update the component's state to reflect the new workflow without re-fetching
+                setWorkflow({
+                  current_step: 'exam',
+                  exam_status: 'pending_submission',
+                  admin_approval_status: 'pending',
+                });
+                setHasStartedCertification(true);
             }
+        } else {
+          // If a workflow already exists, just update the state
+          setWorkflow(workflowData);
+          setHasStartedCertification(certificationExists);
         }
 
-        // Construct the pre-filled Google Form URL
+        // This section now runs for all cases, ensuring examUrl and course are always set
         let prefilledExamUrl = courseData.exam_url || '';
         if (user?.id && level && prefilledExamUrl) {
-          const examCodeEntryId = "entry.2020796157"; // Google Form entry ID for ExamCode
-          const levelEntryId = "entry.1742429722";   // Google Form entry ID for certification level
-          
-          // Debug: log the values being used
-          console.log('User ID:', user.id);
-          console.log('Level:', level);
-          console.log('Pre-filled URL:', `${prefilledExamUrl}?${examCodeEntryId}=${encodeURIComponent(user.id)}&${levelEntryId}=${level}`);
-          
+          const examCodeEntryId = "entry.2020796157";
+          const levelEntryId = "entry.1742429722";
+
           prefilledExamUrl = `${prefilledExamUrl}?${examCodeEntryId}=${encodeURIComponent(user.id)}&${levelEntryId}=${level}`;
         }
         setExamUrl(prefilledExamUrl);
-        
-        // Store course data for instructions
         setCourse(courseData);
       }
     } catch (error) {
