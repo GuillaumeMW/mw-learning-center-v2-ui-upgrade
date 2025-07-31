@@ -27,6 +27,7 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneNumberError, setPhoneNumberError] = useState('');
+  const [postalCodeError, setPostalCodeError] = useState('');
   const [addressLine1, setAddressLine1] = useState('');
   const [addressLine2, setAddressLine2] = useState('');
   const [city, setCity] = useState('');
@@ -110,6 +111,83 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
     }
   };
 
+  // Postal/Zip code validation and formatting
+  const isCanadianProvince = (provinceState: string) => {
+    return canadianProvinces.includes(provinceState);
+  };
+
+  const validateCanadianPostalCode = (postalCode: string) => {
+    // Canadian postal code format: A1A 1A1 or A1A1A1
+    const pattern = /^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/;
+    return pattern.test(postalCode);
+  };
+
+  const validateUSZipCode = (zipCode: string) => {
+    // US zip code format: 12345 or 12345-1234
+    const pattern = /^\d{5}(-\d{4})?$/;
+    return pattern.test(zipCode);
+  };
+
+  const formatCanadianPostalCode = (postalCode: string) => {
+    // Remove all non-alphanumeric characters and convert to uppercase
+    const cleaned = postalCode.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    
+    if (cleaned.length <= 3) {
+      return cleaned;
+    } else if (cleaned.length <= 6) {
+      return `${cleaned.slice(0, 3)} ${cleaned.slice(3)}`;
+    }
+    
+    // Limit to 6 characters
+    const limited = cleaned.slice(0, 6);
+    return `${limited.slice(0, 3)} ${limited.slice(3)}`;
+  };
+
+  const formatUSZipCode = (zipCode: string) => {
+    // Remove all non-digit characters
+    const digitsOnly = zipCode.replace(/\D/g, '');
+    
+    if (digitsOnly.length <= 5) {
+      return digitsOnly;
+    } else if (digitsOnly.length <= 9) {
+      return `${digitsOnly.slice(0, 5)}-${digitsOnly.slice(5)}`;
+    }
+    
+    // Limit to 9 digits
+    const limited = digitsOnly.slice(0, 9);
+    return `${limited.slice(0, 5)}-${limited.slice(5)}`;
+  };
+
+  const handlePostalCodeChange = (value: string) => {
+    if (!provinceState) {
+      setPostalCode(value);
+      setPostalCodeError('');
+      return;
+    }
+
+    const isCanadian = isCanadianProvince(provinceState);
+    let formatted = value;
+    
+    if (isCanadian) {
+      formatted = formatCanadianPostalCode(value);
+    } else {
+      formatted = formatUSZipCode(value);
+    }
+    
+    setPostalCode(formatted);
+    
+    // Validate and set error
+    if (value.trim() === '') {
+      setPostalCodeError('');
+    } else if (isCanadian && !validateCanadianPostalCode(value)) {
+      setPostalCodeError('Please enter a valid Canadian postal code (A1A 1A1)');
+    } else if (!isCanadian && !validateUSZipCode(value)) {
+      setPostalCodeError('Please enter a valid US zip code (12345 or 12345-1234)');
+    } else {
+      setPostalCodeError('');
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -150,6 +228,20 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
       setError('Please enter a valid US/Canada phone number (XXX-XXX-XXXX)');
       setLoading(false);
       return;
+    }
+
+    // Validate postal code if provided
+    if (postalCode && provinceState) {
+      const isCanadian = isCanadianProvince(provinceState);
+      if (isCanadian && !validateCanadianPostalCode(postalCode)) {
+        setError('Please enter a valid Canadian postal code (A1A 1A1)');
+        setLoading(false);
+        return;
+      } else if (!isCanadian && !validateUSZipCode(postalCode)) {
+        setError('Please enter a valid US zip code (12345 or 12345-1234)');
+        setLoading(false);
+        return;
+      }
     }
 
     const { error } = await signUp(email, password, {
@@ -193,6 +285,7 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
     setLastName('');
     setPhoneNumber('');
     setPhoneNumberError('');
+    setPostalCodeError('');
     setAddressLine1('');
     setAddressLine2('');
     setCity('');
@@ -442,18 +535,31 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
                        </SelectContent>
                      </Select>
                    </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      placeholder="Postal Code"
-                      value={postalCode}
-                      onChange={(e) => setPostalCode(e.target.value)}
-                    />
-                    <Input
-                      placeholder="Country"
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                    />
-                  </div>
+                   <div className="grid grid-cols-2 gap-2">
+                     <div className="space-y-1">
+                       <Input
+                         placeholder={provinceState && isCanadianProvince(provinceState) ? "A1A 1A1" : "12345"}
+                         value={postalCode}
+                         onChange={(e) => handlePostalCodeChange(e.target.value)}
+                         className={postalCodeError ? 'border-red-500' : ''}
+                       />
+                       {postalCodeError && (
+                         <p className="text-sm text-red-600">{postalCodeError}</p>
+                       )}
+                       {provinceState && (
+                         <p className="text-xs text-muted-foreground">
+                           {isCanadianProvince(provinceState) 
+                             ? 'Format: A1A 1A1 (Canadian postal code)' 
+                             : 'Format: 12345 or 12345-1234 (US zip code)'}
+                         </p>
+                       )}
+                     </div>
+                     <Input
+                       placeholder="Country"
+                       value={country}
+                       onChange={(e) => setCountry(e.target.value)}
+                     />
+                   </div>
                 </div>
 
                 {/* Employment Status Dropdown */}
