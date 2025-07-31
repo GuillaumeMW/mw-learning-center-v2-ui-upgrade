@@ -26,6 +26,7 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumberError, setPhoneNumberError] = useState('');
   const [addressLine1, setAddressLine1] = useState('');
   const [addressLine2, setAddressLine2] = useState('');
   const [city, setCity] = useState('');
@@ -39,6 +40,62 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
 
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
+
+  // Phone number validation and formatting
+  const validatePhoneNumber = (phone: string) => {
+    // Remove all non-digit characters
+    const digitsOnly = phone.replace(/\D/g, '');
+    
+    // Check if it's exactly 10 digits (US/Canada format)
+    if (digitsOnly.length === 10) {
+      return true;
+    } else if (digitsOnly.length === 11 && digitsOnly.startsWith('1')) {
+      // Accept 11 digits if it starts with 1 (country code)
+      return true;
+    }
+    return false;
+  };
+
+  const formatPhoneNumber = (phone: string) => {
+    // Remove all non-digit characters
+    const digitsOnly = phone.replace(/\D/g, '');
+    
+    // Format as XXX-XXX-XXXX
+    if (digitsOnly.length <= 3) {
+      return digitsOnly;
+    } else if (digitsOnly.length <= 6) {
+      return `${digitsOnly.slice(0, 3)}-${digitsOnly.slice(3)}`;
+    } else if (digitsOnly.length <= 10) {
+      return `${digitsOnly.slice(0, 3)}-${digitsOnly.slice(3, 6)}-${digitsOnly.slice(6)}`;
+    } else if (digitsOnly.length === 11 && digitsOnly.startsWith('1')) {
+      // Format as 1-XXX-XXX-XXXX for 11 digits starting with 1
+      return `1-${digitsOnly.slice(1, 4)}-${digitsOnly.slice(4, 7)}-${digitsOnly.slice(7)}`;
+    }
+    
+    // Limit to 10 digits for other cases
+    const limitedDigits = digitsOnly.slice(0, 10);
+    if (limitedDigits.length <= 3) {
+      return limitedDigits;
+    } else if (limitedDigits.length <= 6) {
+      return `${limitedDigits.slice(0, 3)}-${limitedDigits.slice(3)}`;
+    } else {
+      return `${limitedDigits.slice(0, 3)}-${limitedDigits.slice(3, 6)}-${limitedDigits.slice(6)}`;
+    }
+  };
+
+  const handlePhoneNumberChange = (value: string) => {
+    const formatted = formatPhoneNumber(value);
+    setPhoneNumber(formatted);
+    
+    // Validate and set error
+    if (value.trim() === '') {
+      setPhoneNumberError('');
+    } else if (!validatePhoneNumber(value)) {
+      setPhoneNumberError('Please enter a valid US/Canada phone number (XXX-XXX-XXXX)');
+    } else {
+      setPhoneNumberError('');
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,6 +128,13 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
 
     if (!firstName || !lastName) {
       setError('First name and last name are required');
+      setLoading(false);
+      return;
+    }
+
+    // Validate phone number if provided
+    if (phoneNumber && !validatePhoneNumber(phoneNumber)) {
+      setError('Please enter a valid US/Canada phone number (XXX-XXX-XXXX)');
       setLoading(false);
       return;
     }
@@ -115,6 +179,7 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
     setFirstName('');
     setLastName('');
     setPhoneNumber('');
+    setPhoneNumberError('');
     setAddressLine1('');
     setAddressLine2('');
     setCity('');
@@ -305,12 +370,18 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
                     <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="phoneNumber"
-                      placeholder="+1 (555) 123-4567"
+                      placeholder="555-123-4567"
                       value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      className="pl-10"
+                      onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                      className={`pl-10 ${phoneNumberError ? 'border-red-500' : ''}`}
                     />
                   </div>
+                  {phoneNumberError && (
+                    <p className="text-sm text-red-600">{phoneNumberError}</p>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Format: XXX-XXX-XXXX (US/Canada phone numbers only)
+                  </p>
                 </div>
 
                 {/* Address Fields */}
