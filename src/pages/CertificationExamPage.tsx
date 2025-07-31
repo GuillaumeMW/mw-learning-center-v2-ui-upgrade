@@ -24,6 +24,7 @@ const CertificationExamPage = () => {
   const [workflow, setWorkflow] = useState<CertificationWorkflow | null>(null);
   const [allSectionsCompleted, setAllSectionsCompleted] = useState(false);
   const [course, setCourse] = useState<any>(null);
+  const [hasStartedCertification, setHasStartedCertification] = useState(false);
 
   useEffect(() => {
     if (user && level) {
@@ -65,6 +66,55 @@ const CertificationExamPage = () => {
         const allCompleted = allSubsectionIds.length > 0 && allSubsectionIds.every(id => completedSubsectionIds.includes(id));
         setAllSectionsCompleted(allCompleted);
 
+        // Fetch certification workflow
+        const { data: workflowData, error: workflowError } = await supabase
+          .from('certification_workflows')
+          .select('current_step, exam_status, admin_approval_status')
+          .eq('user_id', user!.id)
+          .eq('level', levelNum)
+          .maybeSingle();
+
+        if (workflowError) {
+          throw workflowError;
+        }
+
+        const certificationExists = !!workflowData;
+        setHasStartedCertification(certificationExists);
+        setWorkflow(workflowData);
+
+        // NEW: If all sections are completed and no workflow entry exists, create one
+        if (allCompleted && !certificationExists) {
+            const { error: insertError } = await supabase
+                .from('certification_workflows')
+                .insert({
+                    user_id: user.id,
+                    level: levelNum,
+                    course_id: courseData.id,
+                    current_step: 'exam', // Set the initial step
+                    exam_status: 'pending_submission', // Ready for submission
+                    admin_approval_status: 'pending',
+                    contract_status: 'not_required',
+                    subscription_status: 'not_required',
+                });
+
+            if (insertError) {
+                console.error('Error creating certification workflow entry:', insertError);
+                toast({
+                    title: 'Error',
+                    description: 'Failed to start certification process.',
+                    variant: 'destructive',
+                });
+            } else {
+                // After successful creation, re-fetch the workflow to update state
+                await fetchExamDetails();
+                toast({
+                    title: 'Certification Started',
+                    description: 'Your certification process has begun!',
+                });
+                return; // Exit early to avoid infinite recursion
+            }
+        }
+
         // Construct the pre-filled Google Form URL
         let prefilledExamUrl = courseData.exam_url || '';
         if (user?.id && level && prefilledExamUrl) {
@@ -83,16 +133,6 @@ const CertificationExamPage = () => {
         // Store course data for instructions
         setCourse(courseData);
       }
-
-      // Fetch certification workflow
-      const { data: workflowData } = await supabase
-        .from('certification_workflows')
-        .select('current_step, exam_status, admin_approval_status')
-        .eq('user_id', user!.id)
-        .eq('level', levelNum)
-        .maybeSingle();
-
-      setWorkflow(workflowData);
     } catch (error) {
       console.error('Error fetching exam details:', error);
       toast({
