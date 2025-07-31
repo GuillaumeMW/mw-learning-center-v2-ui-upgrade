@@ -9,7 +9,7 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Progress } from "./ui/progress";
 import { Loader2, GraduationCap, Target, BookOpen, ArrowRight, Lock, FileText, CheckCircle2, Clock } from "lucide-react";
-import certificateBadge from "@/assets/certificate-level1.png";
+import certificateBadge from "@/assets/mw-certified-level-1-hori.png";
 import CertificationWorkflowCards from "./CertificationWorkflowCards";
 
 interface CourseWithNestedContent extends Course {
