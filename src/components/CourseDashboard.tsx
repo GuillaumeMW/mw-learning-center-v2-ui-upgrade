@@ -283,7 +283,7 @@ const CourseDashboard = () => {
             {/* Contract */}
             <div 
               className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
-              onClick={() => navigate('/contract-signing')}
+              onClick={() => navigate('/certification/1/contract')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <FileSignature className="w-6 h-6 text-black" />
@@ -425,7 +425,7 @@ const CourseDashboard = () => {
             {/* Contract Completed */}
             <div 
               className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
-              onClick={() => navigate('/contract-signing')}
+              onClick={() => navigate('/certification/1/contract')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <FileSignature className="w-6 h-6 text-black" />
@@ -468,7 +468,7 @@ const CourseDashboard = () => {
             <Button 
               style={{ backgroundColor: '#fa372c' }}
               className="text-white hover:opacity-90 px-6 py-2 text-base font-medium"
-              onClick={() => navigate('/contract-signing')}
+              onClick={() => navigate('/certification/1/contract')}
             >
               Sign my Contract
             </Button>
@@ -483,7 +483,7 @@ const CourseDashboard = () => {
             {/* Contract */}
             <div 
               className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
-              onClick={() => navigate('/contract-signing')}
+              onClick={() => navigate('/certification/1/contract')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <FileSignature className="w-6 h-6 text-black" />
@@ -604,7 +604,7 @@ const CourseDashboard = () => {
             {/* Contract */}
             <div 
               className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
-              onClick={() => navigate('/contract-signing')}
+              onClick={() => navigate('/certification/1/contract')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
                 <FileSignature className="w-6 h-6 text-black" />
@@ -719,7 +719,7 @@ const CourseDashboard = () => {
           {/* Contract */}
           <div 
             className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
-            onClick={() => navigate('/contract-signing')}
+            onClick={() => navigate('/certification/1/contract')}
           >
             <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
               <FileSignature className="w-6 h-6 text-black" />
