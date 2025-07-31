@@ -649,45 +649,162 @@ const CourseDashboard = () => {
         </div>
       )}
 
-      {/* Next Steps Section */}
-      <div className="space-y-6">
-        <h2 className="text-xl font-bold text-black">Next Steps</h2>
-        
-        <div className="space-y-4">
-          {/* Certification Exam */}
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-              <FileText className="w-6 h-6 text-black" />
-            </div>
-            <div>
-              <h3 className="text-base font-semibold text-black">Certification Exam</h3>
-              <p className="text-[#242526]">Pass the Level 1 exam to proceed.</p>
-            </div>
-          </div>
+      {/* Dynamic Certification Steps */}
+      {(() => {
+        const certificationStatus = getCertificationStatus(1);
+        const isTrainingCompleted = courseProgress.percentage === 100;
+        const isExamApproved = certificationStatus?.examStatus === 'passed' && certificationStatus?.adminApproval === 'approved';
+        const isContractSigned = isExamApproved && certificationStatus?.contractStatus === 'signed';
+        const isSubscriptionActive = certificationStatus?.subscriptionStatus === 'active';
 
-          {/* Contract */}
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-              <FileText className="w-6 h-6 text-black" />
-            </div>
-            <div>
-              <h3 className="text-base font-semibold text-black">Contract</h3>
-              <p className="text-[#242526]">Review and sign the advisor agreement.</p>
-            </div>
-          </div>
+        // Determine which items are in "Next Steps" vs "Completed"
+        const nextSteps = [];
+        const completedSteps = [];
 
-          {/* Subscription */}
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-              <FileText className="w-6 h-6 text-black" />
-            </div>
-            <div>
-              <h3 className="text-base font-semibold text-black">Subscription</h3>
-              <p className="text-[#242526]">Choose a subscription plan to activate your certification.</p>
-            </div>
-          </div>
-        </div>
-      </div>
+        // Certification Exam (only show if training is completed)
+        if (isTrainingCompleted && !isExamApproved) {
+          const examStatus = certificationStatus?.examStatus;
+          nextSteps.push({
+            id: 'exam',
+            icon: examStatus === 'under_review' ? Clock : FileText,
+            title: 'Certification Exam',
+            description: 'Pass the Level 1 exam to proceed.',
+            action: () => navigate(`/certification/1/exam`),
+            clickable: examStatus !== 'under_review'
+          });
+        } else if (isExamApproved) {
+          completedSteps.push({
+            id: 'exam',
+            icon: CheckCircle2,
+            title: 'Certification Exam',
+            description: 'Pass the Level 1 exam to proceed.',
+            clickable: false
+          });
+        }
+
+        // Contract (only show if exam is approved)
+        if (isExamApproved && !isContractSigned) {
+          nextSteps.push({
+            id: 'contract',
+            icon: FileText,
+            title: 'Contract',
+            description: 'Review and sign the advisor agreement.',
+            action: () => navigate('/contract-signing'),
+            clickable: true
+          });
+        } else if (isContractSigned) {
+          completedSteps.push({
+            id: 'contract',
+            icon: CheckCircle2,
+            title: 'Contract',
+            description: 'Review and sign the advisor agreement.',
+            clickable: false
+          });
+        }
+
+        // Subscription (only show if contract is signed)
+        if (isContractSigned && !isSubscriptionActive) {
+          nextSteps.push({
+            id: 'subscription',
+            icon: FileText,
+            title: 'Subscription',
+            description: 'Choose a subscription plan to activate your certification.',
+            action: () => navigate('/certification/1/payment'),
+            clickable: true
+          });
+        } else if (isSubscriptionActive) {
+          completedSteps.push({
+            id: 'subscription',
+            icon: CheckCircle2,
+            title: 'Subscription',
+            description: 'Choose a subscription plan to activate your certification.',
+            clickable: false
+          });
+        }
+
+        return (
+          <>
+            {/* Next Steps Section */}
+            {nextSteps.length > 0 && (
+              <div className="space-y-6">
+                <h2 className="text-xl font-bold text-black">Next Steps</h2>
+                
+                <div className="space-y-4">
+                  {nextSteps.map((step) => {
+                    const Icon = step.icon;
+                    return (
+                      <div 
+                        key={step.id}
+                        className={`flex items-start gap-4 ${step.clickable ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+                        onClick={step.clickable && step.action ? step.action : undefined}
+                      >
+                        <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Icon className="w-6 h-6 text-black" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-semibold text-black">{step.title}</h3>
+                          <p className="text-[#242526]">{step.description}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Completed Section */}
+            {completedSteps.length > 0 && (
+              <div className="space-y-6">
+                <h2 className="text-xl font-bold text-black">Completed</h2>
+                
+                <div className="space-y-4">
+                  {/* Always show completed training */}
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-6 h-6 text-green-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-semibold text-black">Training</h3>
+                      <p className="text-[#242526]">Complete the Level 1 training modules</p>
+                    </div>
+                  </div>
+
+                  {/* Other completed steps */}
+                  {completedSteps.map((step) => {
+                    const Icon = step.icon;
+                    return (
+                      <div key={step.id} className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Icon className="w-6 h-6 text-green-600" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-semibold text-black">{step.title}</h3>
+                          <p className="text-[#242526]">{step.description}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Show certification complete message if everything is done */}
+            {isSubscriptionActive && (
+              <div className="space-y-4">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <GraduationCap className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-green-700">Certification Complete!</h3>
+                    <p className="text-green-600">Congratulations! You are now a certified MovingWaldo advisor.</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        );
+      })()}
     </div>
   );
 };
