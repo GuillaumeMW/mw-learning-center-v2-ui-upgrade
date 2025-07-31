@@ -8,7 +8,7 @@ import CourseCard from "./CourseCard";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Progress } from "./ui/progress";
-import { Loader2, GraduationCap, Target, BookOpen, ArrowRight, Lock, FileText, CheckCircle2, Clock } from "lucide-react";
+import { Loader2, GraduationCap, Target, BookOpen, ArrowRight, Lock, FileText, CheckCircle2, Clock, ClipboardCheck, FileSignature, CreditCard } from "lucide-react";
 import certificateBadge from "@/assets/mw-certified-level-1-hori.png";
 import CertificationWorkflowCards from "./CertificationWorkflowCards";
 
@@ -266,7 +266,7 @@ const CourseDashboard = () => {
             {/* Exam */}
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-black" />
+                <ClipboardCheck className="w-6 h-6 text-black" />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-black">Exam</h3>
@@ -277,7 +277,7 @@ const CourseDashboard = () => {
             {/* Contract */}
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-black" />
+                <FileSignature className="w-6 h-6 text-black" />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-black">Contract</h3>
@@ -288,7 +288,7 @@ const CourseDashboard = () => {
             {/* Subscription */}
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-black" />
+                <CreditCard className="w-6 h-6 text-black" />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-black">Subscription</h3>
@@ -364,7 +364,7 @@ const CourseDashboard = () => {
             {/* Subscription */}
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-black" />
+                <CreditCard className="w-6 h-6 text-black" />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-black">Subscription</h3>
@@ -393,7 +393,7 @@ const CourseDashboard = () => {
             {/* Certification Exam Completed */}
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-black" />
+                <ClipboardCheck className="w-6 h-6 text-black" />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-black">Certification Exam</h3>
@@ -404,7 +404,7 @@ const CourseDashboard = () => {
             {/* Contract Completed */}
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-black" />
+                <FileSignature className="w-6 h-6 text-black" />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-black">Contract</h3>
@@ -459,7 +459,7 @@ const CourseDashboard = () => {
             {/* Contract */}
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-black" />
+                <FileSignature className="w-6 h-6 text-black" />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-black">Contract</h3>
@@ -470,7 +470,7 @@ const CourseDashboard = () => {
             {/* Subscription */}
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-black" />
+                <CreditCard className="w-6 h-6 text-black" />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-black">Subscription</h3>
@@ -499,7 +499,7 @@ const CourseDashboard = () => {
             {/* Certification Exam Completed */}
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-black" />
+                <ClipboardCheck className="w-6 h-6 text-black" />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-black">Certification Exam</h3>
@@ -554,7 +554,7 @@ const CourseDashboard = () => {
             {/* Certification Exam */}
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-black" />
+                <ClipboardCheck className="w-6 h-6 text-black" />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-black">Certification Exam</h3>
@@ -565,7 +565,7 @@ const CourseDashboard = () => {
             {/* Contract */}
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-black" />
+                <FileSignature className="w-6 h-6 text-black" />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-black">Contract</h3>
@@ -576,7 +576,7 @@ const CourseDashboard = () => {
             {/* Subscription */}
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-black" />
+                <CreditCard className="w-6 h-6 text-black" />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-black">Subscription</h3>
@@ -657,7 +657,7 @@ const CourseDashboard = () => {
           {/* Certification Exam */}
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-              <FileText className="w-6 h-6 text-black" />
+              <ClipboardCheck className="w-6 h-6 text-black" />
             </div>
             <div>
               <h3 className="text-base font-semibold text-black">Certification Exam</h3>
@@ -668,7 +668,7 @@ const CourseDashboard = () => {
           {/* Contract */}
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-              <FileText className="w-6 h-6 text-black" />
+              <FileSignature className="w-6 h-6 text-black" />
             </div>
             <div>
               <h3 className="text-base font-semibold text-black">Contract</h3>
@@ -679,7 +679,7 @@ const CourseDashboard = () => {
           {/* Subscription */}
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-              <FileText className="w-6 h-6 text-black" />
+              <CreditCard className="w-6 h-6 text-black" />
             </div>
             <div>
               <h3 className="text-base font-semibold text-black">Subscription</h3>
