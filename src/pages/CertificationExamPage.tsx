@@ -80,6 +80,11 @@ const CertificationExamPage = () => {
 
         const certificationExists = !!workflowData;
 
+        console.log("Debug check before insert:"); // NEW LOG
+        console.log("All sections completed:", allCompleted); // NEW LOG
+        console.log("Certification workflow exists:", certificationExists); // NEW LOG
+        console.log("Existing workflow data:", workflowData); // NEW LOG
+
         // ----- REVISED LOGIC -----
         // Only attempt to insert if a workflow doesn't exist and prerequisites are met.
         if (allCompleted && !certificationExists) {
