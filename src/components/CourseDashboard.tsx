@@ -630,7 +630,7 @@ const CourseDashboard = () => {
               <span className="text-black">Training Progress</span>
               <span className="text-black font-semibold">{courseProgress.percentage}%</span>
             </div>
-            <Progress value={courseProgress.percentage} className="h-3" />
+            <Progress value={courseProgress.percentage} className="h-2" />
             <span className="text-sm text-[#242526]">
               {courseProgress.completed}/{courseProgress.total} subsections completed
             </span>
