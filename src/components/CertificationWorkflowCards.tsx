@@ -10,7 +10,9 @@ import {
   Lock,
   BookOpen,
   UserCheck,
-  CreditCard
+  CreditCard,
+  FileSignature,
+  DollarSign
 } from "lucide-react";
 
 interface CertificationWorkflowCardsProps {
@@ -79,9 +81,9 @@ const CertificationWorkflowCards = ({
     },
     {
       id: 'contract',
-      title: 'Contract Signing',
-      icon: FileText,
-      description: 'Sign the certification contract',
+      title: 'Contract',
+      icon: FileSignature,
+      description: 'Review and sign the advisor agreement.',
       isUnlocked: certificationWorkflow?.admin_approval_status === 'approved',
       isCompleted: certificationWorkflow?.contract_status === 'signed',
       action: () => navigate(`/certification/${course.level}/contract`),
@@ -90,9 +92,9 @@ const CertificationWorkflowCards = ({
     },
     {
       id: 'payment',
-      title: 'Payment',
-      icon: CreditCard,
-      description: 'Complete certification payment',
+      title: 'Subscription',
+      icon: DollarSign,
+      description: 'Choose a subscription plan to activate your certification.',
       isUnlocked: certificationWorkflow?.contract_status === 'signed',
       isCompleted: certificationWorkflow?.subscription_status === 'active',
       action: () => {
@@ -211,13 +213,20 @@ const CertificationWorkflowCards = ({
           
           return (
             <div key={step.id} className="relative">
-              <Card className={`transition-all ${
-                isLocked 
-                  ? 'opacity-60 bg-muted/30' 
-                  : step.isCompleted 
-                  ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
-                  : 'border-primary/50 bg-primary/5'
-              }`}>
+              <Card 
+                className={`transition-all cursor-pointer ${
+                  isLocked 
+                    ? 'opacity-60 bg-muted/30' 
+                    : step.isCompleted 
+                    ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                    : 'border-primary/50 bg-primary/5'
+                } ${step.action && step.isUnlocked ? 'hover:shadow-md' : ''}`}
+                onClick={() => {
+                  if (step.action && step.isUnlocked) {
+                    step.action();
+                  }
+                }}
+              >
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-sm">
                     <div className={`p-2 rounded-full ${
@@ -247,16 +256,19 @@ const CertificationWorkflowCards = ({
                     {step.message}
                   </p>
                   
-                  {step.action && step.isUnlocked && !step.isCompleted && (
-                    <Button 
-                      size="sm" 
-                      onClick={step.action}
-                      className="w-full"
-                      variant={step.id === 'course' ? 'outline' : 'default'}
-                    >
-                      {step.actionText}
-                    </Button>
-                  )}
+                   {step.action && step.isUnlocked && !step.isCompleted && (
+                     <Button 
+                       size="sm" 
+                       onClick={(e) => {
+                         e.stopPropagation();
+                         step.action();
+                       }}
+                       className="w-full"
+                       variant={step.id === 'course' ? 'outline' : 'default'}
+                     >
+                       {step.actionText}
+                     </Button>
+                   )}
                   
                   {(isLocked || step.isCompleted || !step.action) && (
                     <div className="flex items-center justify-center p-2">
