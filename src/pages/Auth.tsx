@@ -41,6 +41,19 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
 
+  // Province/State options
+  const canadianProvinces = [
+    'AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT'
+  ];
+
+  const usStates = [
+    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+    'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+    'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'DC'
+  ];
+
   // Phone number validation and formatting
   const validatePhoneNumber = (phone: string) => {
     // Remove all non-digit characters
@@ -399,18 +412,36 @@ const AuthPage = ({ defaultTab = 'login' }: AuthPageProps) => {
                     onChange={(e) => setAddressLine2(e.target.value)}
                     className="mb-2"
                   />
-                  <div className="grid grid-cols-2 gap-2 mb-2">
-                    <Input
-                      placeholder="City"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                    />
-                    <Input
-                      placeholder="Province/State"
-                      value={provinceState}
-                      onChange={(e) => setProvinceState(e.target.value)}
-                    />
-                  </div>
+                   <div className="grid grid-cols-2 gap-2 mb-2">
+                     <Input
+                       placeholder="City"
+                       value={city}
+                       onChange={(e) => setCity(e.target.value)}
+                     />
+                     <Select value={provinceState} onValueChange={setProvinceState}>
+                       <SelectTrigger>
+                         <SelectValue placeholder="Province/State" />
+                       </SelectTrigger>
+                       <SelectContent className="max-h-60 overflow-y-auto bg-background z-50">
+                         <div className="px-2 py-1 text-xs font-semibold text-muted-foreground bg-muted/50">
+                           Canadian Provinces
+                         </div>
+                         {canadianProvinces.map(province => (
+                           <SelectItem key={province} value={province}>
+                             {province}
+                           </SelectItem>
+                         ))}
+                         <div className="px-2 py-1 text-xs font-semibold text-muted-foreground bg-muted/50 mt-1">
+                           US States
+                         </div>
+                         {usStates.map(state => (
+                           <SelectItem key={state} value={state}>
+                             {state}
+                           </SelectItem>
+                         ))}
+                       </SelectContent>
+                     </Select>
+                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <Input
                       placeholder="Postal Code"
