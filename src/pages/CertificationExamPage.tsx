@@ -269,7 +269,7 @@ const CertificationExamPage = () => {
               <Button 
                 variant="outline" 
                 className="mt-4"
-                onClick={() => navigate(`/courses/${level}`)}
+                onClick={() => navigate(`/course/${level}`)}
               >
                 Return to Course
               </Button>
