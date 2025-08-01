@@ -93,8 +93,48 @@ serve(async (req) => {
 
     logStep("Workflow updated successfully", { workflowId: workflow?.id });
 
-    // Optional: Send email notification to student
-    // await notifyStudentCertificationStatus(user_id, level, action);
+    // Get user profile for email notification
+    const { data: profile, error: profileError } = await supabaseService
+      .from("profiles")
+      .select("first_name, last_name")
+      .eq("user_id", user_id)
+      .single();
+
+    if (profileError) {
+      logStep("WARNING: Could not fetch user profile", { error: profileError });
+    }
+
+    // Get user email from auth
+    const { data: authUser, error: authError } = await supabaseService.auth.admin.getUserById(user_id);
+    
+    if (authError) {
+      logStep("WARNING: Could not fetch user email", { error: authError });
+    }
+
+    // Send email notification if we have the required data
+    if (authUser?.user?.email && profile) {
+      try {
+        const userName = `${profile.first_name} ${profile.last_name}`.trim() || "Student";
+        
+        const { error: emailError } = await supabaseService.functions.invoke('send-certification-notification', {
+          body: {
+            user_id,
+            level,
+            action,
+            user_email: authUser.user.email,
+            user_name: userName
+          }
+        });
+
+        if (emailError) {
+          logStep("WARNING: Failed to send email notification", { error: emailError });
+        } else {
+          logStep("Email notification sent successfully");
+        }
+      } catch (emailError) {
+        logStep("WARNING: Email notification failed", { error: emailError });
+      }
+    }
 
     return new Response(JSON.stringify({ 
       success: true, 
