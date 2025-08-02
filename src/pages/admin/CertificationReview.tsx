@@ -114,15 +114,15 @@ const CertificationReview = () => {
         return;
       }
 
-      // Get profile information and email for eligible users
+      // Get secure user data including emails for eligible users
       const eligibleUserIds = eligibleUsers.map(u => u.user_id);
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('user_id, first_name, last_name')
-        .in('user_id', eligibleUserIds);
+      const { data: secureUserResponse, error: secureUserError } = await supabase.functions.invoke('fetch-user-data-for-admin', {
+        body: { userIds: eligibleUserIds }
+      });
 
-      if (profileError) throw profileError;
+      if (secureUserError) throw secureUserError;
 
+      const secureUserData = secureUserResponse?.data || [];
 
       // Now check existing certification workflows for these users
       const { data: existingWorkflows, error: workflowError } = await supabase
@@ -136,8 +136,8 @@ const CertificationReview = () => {
       const workflowsToDisplay = [];
       
       for (const user of eligibleUsers) {
-        // Find profile for this user
-        const profile = profileData?.find(p => p.user_id === user.user_id);
+        // Find secure user data for this user
+        const secureUser = secureUserData?.find(p => p.user_id === user.user_id);
         
         let workflow = existingWorkflows?.find(w => 
           w.user_id === user.user_id && w.level === user.level
@@ -169,9 +169,9 @@ const CertificationReview = () => {
         if (workflow.admin_approval_status === 'pending') {
           workflowsToDisplay.push({
             ...workflow,
-            first_name: profile?.first_name || '',
-            last_name: profile?.last_name || '',
-            email: `${workflow.user_id.slice(0, 8)}@temp.com` // Placeholder for email
+            first_name: secureUser?.first_name || '',
+            last_name: secureUser?.last_name || '',
+            email: secureUser?.email || ''
           });
         }
       }

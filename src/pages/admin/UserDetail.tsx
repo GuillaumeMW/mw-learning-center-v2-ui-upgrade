@@ -180,7 +180,17 @@ const UserDetail = () => {
     if (!userId) return;
     
     try {
-      // Get user profile
+      // Get secure user data including email from edge function
+      const { data: secureUserResponse, error: secureUserError } = await supabase.functions.invoke('fetch-user-data-for-admin', {
+        body: { userId }
+      });
+
+      if (secureUserError) throw secureUserError;
+
+      const secureUserData = secureUserResponse?.data?.[0];
+      if (!secureUserData) throw new Error('User not found');
+
+      // Get user profile (as fallback for any missing data)
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -323,8 +333,8 @@ const UserDetail = () => {
 
       const userData: UserDetailData = {
         id: userId,
-        email: '', // Would need to get from auth if accessible
-        created_at: profileData.created_at,
+        email: secureUserData.email || '',
+        created_at: secureUserData.created_at || profileData.created_at,
         profile: {
           first_name: profileData.first_name,
           last_name: profileData.last_name,

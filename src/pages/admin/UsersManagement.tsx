@@ -28,12 +28,11 @@ import { formatDistanceToNow } from 'date-fns';
 
 interface UserData {
   id: string;
+  email: string;
   created_at: string;
-  profile: {
-    first_name: string;
-    last_name: string;
-    phone_number: string | null;
-  } | null;
+  first_name: string;
+  last_name: string;
+  phone_number: string | null;
   course_progress: {
     total_courses: number;
     completed_courses: number;
@@ -121,42 +120,59 @@ const UsersManagement = () => {
   ) => {
     setLoading(true);
     try {
-      const offset = (page - 1) * limit;
+      // Call the secure edge function to get user data
+      const { data: usersResponse, error: usersError } = await supabase.functions.invoke('fetch-user-data-for-admin', {
+        body: {} // Fetch all users
+      });
 
-      // Fetch user profiles (for name and created_at)
-      let dbSortKey = currentSortConfig.key;
-      if (currentSortConfig.key === 'name') {
-        dbSortKey = 'last_name';
-      }
+      if (usersError) throw usersError;
 
-      let profilesQuery = supabase
-        .from('profiles')
-        .select(`
-          user_id,
-          first_name,
-          last_name,
-          created_at,
-          phone_number
-        `, { count: 'exact' });
+      const allUsersData = usersResponse?.data || [];
 
-      // Apply search filter if searchTerm exists and is not empty
+      // Apply search filter
+      let filteredUsers = allUsersData;
       if (searchTerm.trim()) {
-        const searchPattern = `%${searchTerm.trim().toLowerCase()}%`;
-        profilesQuery = profilesQuery.or(
-          `first_name.ilike.${searchPattern},last_name.ilike.${searchPattern},phone_number.ilike.${searchPattern}`
+        const searchLower = searchTerm.trim().toLowerCase();
+        filteredUsers = allUsersData.filter((user: any) =>
+          user.first_name?.toLowerCase().includes(searchLower) ||
+          user.last_name?.toLowerCase().includes(searchLower) ||
+          user.phone_number?.toLowerCase().includes(searchLower) ||
+          user.email?.toLowerCase().includes(searchLower)
         );
       }
 
-      profilesQuery = profilesQuery
-        .order(dbSortKey, { ascending: currentSortConfig.direction === 'asc' })
-        .range(offset, offset + limit - 1);
+      // Apply sorting
+      filteredUsers.sort((a: any, b: any) => {
+        let aValue, bValue;
+        
+        switch (currentSortConfig.key) {
+          case 'created_at':
+            aValue = new Date(a.created_at);
+            bValue = new Date(b.created_at);
+            break;
+          case 'last_name':
+            aValue = a.last_name || '';
+            bValue = b.last_name || '';
+            break;
+          default:
+            aValue = a[currentSortConfig.key] || '';
+            bValue = b[currentSortConfig.key] || '';
+        }
 
-      const { data: profilesData, count: profilesCount, error: profilesError } = await profilesQuery;
-      if (profilesError) throw profilesError;
+        if (aValue < bValue) return currentSortConfig.direction === 'asc' ? -1 : 1;
+        if (aValue > bValue) return currentSortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
 
-      setTotalUsersCount(profilesCount || 0);
+      setTotalUsersCount(filteredUsers.length);
 
-      // Get user progress data - only completed items
+      // Apply pagination
+      const offset = (page - 1) * limit;
+      const paginatedUsers = filteredUsers.slice(offset, offset + limit);
+
+      // Get user progress data for pagination subset
+      const paginatedUserIds = paginatedUsers.map((u: any) => u.user_id);
+      
       const { data: progressData, error: progressError } = await supabase
         .from('user_progress')
         .select(`
@@ -165,11 +181,12 @@ const UsersManagement = () => {
           subsection_id,
           completed_at
         `)
+        .in('user_id', paginatedUserIds)
         .not('completed_at', 'is', null);
 
       if (progressError) throw progressError;
 
-      // Get all subsections for available courses only
+      // Get available courses and subsections for progress calculation
       const { data: availableCoursesData, error: availableCoursesError } = await supabase
         .from('courses')
         .select('id')
@@ -179,11 +196,10 @@ const UsersManagement = () => {
 
       const availableCourseIds = availableCoursesData?.map(c => c.id) || [];
 
-      // Get subsections for available courses (needed for overall progress calculation)
       const { data: sectionsForSubsections, error: sectionsForSubsectionsError } = await supabase
-          .from('sections')
-          .select('id')
-          .in('course_id', availableCourseIds);
+        .from('sections')
+        .select('id')
+        .in('course_id', availableCourseIds);
 
       if (sectionsForSubsectionsError) throw sectionsForSubsectionsError;
 
@@ -198,15 +214,15 @@ const UsersManagement = () => {
 
       const totalAvailableSubsections = subsectionsData?.length || 0;
 
-      // Get course completions for available courses only
+      // Get course completions and workflow data for pagination subset
       const { data: completionsData, error: completionsError } = await supabase
         .from('course_completions')
         .select('user_id, course_id')
-        .in('course_id', availableCourseIds);
+        .in('course_id', availableCourseIds)
+        .in('user_id', paginatedUserIds);
 
       if (completionsError) throw completionsError;
 
-      // Get certification workflow data
       const { data: workflowData, error: workflowError } = await supabase
         .from('certification_workflows')
         .select(`
@@ -215,15 +231,16 @@ const UsersManagement = () => {
           contract_status,
           subscription_status,
           admin_approval_status
-        `);
+        `)
+        .in('user_id', paginatedUserIds);
 
       if (workflowError) throw workflowError;
 
-      // Process the data
-      const usersData: UserData[] = profilesData?.map(profile => {
-        const userProgressFiltered = progressData?.filter(p => p.user_id === profile.user_id) || [];
-        const userCompletions = completionsData?.filter(c => c.user_id === profile.user_id) || [];
-        const userWorkflow = workflowData?.find(w => w.user_id === profile.user_id) || null;
+      // Process the paginated user data
+      const processedUsersData: UserData[] = paginatedUsers.map((user: any) => {
+        const userProgressFiltered = progressData?.filter(p => p.user_id === user.user_id) || [];
+        const userCompletions = completionsData?.filter(c => c.user_id === user.user_id) || [];
+        const userWorkflow = workflowData?.find(w => w.user_id === user.user_id) || null;
 
         // Calculate overall progress based on completed subsections in available courses
         const completedSubsections = userProgressFiltered.filter(p =>
@@ -245,13 +262,12 @@ const UsersManagement = () => {
         );
 
         return {
-          id: profile.user_id,
-          created_at: profile.created_at,
-          profile: {
-            first_name: profile.first_name,
-            last_name: profile.last_name,
-            phone_number: profile.phone_number,
-          },
+          id: user.user_id,
+          email: user.email,
+          created_at: user.created_at,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          phone_number: user.phone_number,
           course_progress: {
             total_courses: availableCourseIds.length,
             completed_courses: userCompletions.length,
@@ -259,9 +275,9 @@ const UsersManagement = () => {
           },
           current_step: currentStep,
         };
-      }) || [];
+      });
 
-      setUsers(usersData);
+      setUsers(processedUsersData);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({
@@ -393,10 +409,10 @@ const UsersManagement = () => {
                   <TableCell>
                     <div>
                       <div className="font-medium">
-                        {user.profile?.first_name} {user.profile?.last_name}
+                        {user.first_name} {user.last_name}
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        ID: {user.id.slice(0, 8)}...
+                        {user.email}
                       </div>
                     </div>
                   </TableCell>
