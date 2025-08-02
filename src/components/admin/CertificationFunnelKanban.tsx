@@ -39,11 +39,11 @@ const CertificationFunnelKanban = () => {
         .from('certification_workflows')
         .select('*', { count: 'exact' });
 
-      // Get users who completed exams (passed exams)
+      // Get users who completed exams (passed exams or approved by admin)
       const { count: completedExams } = await supabase
         .from('certification_workflows')
         .select('*', { count: 'exact' })
-        .eq('exam_status', 'passed');
+        .or('exam_status.eq.passed,admin_approval_status.eq.approved');
 
       // Get users who completed contracts (signed contracts)
       const { count: completedContracts } = await supabase
