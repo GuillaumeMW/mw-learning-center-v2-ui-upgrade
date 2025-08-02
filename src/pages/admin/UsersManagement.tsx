@@ -39,6 +39,7 @@ interface UserData {
     completed_courses: number;
     overall_progress: number;
   };
+  current_step: string;
 }
 
 const UsersManagement = () => {
@@ -52,6 +53,65 @@ const UsersManagement = () => {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Function to determine current step based on progress and workflow status
+  const getCurrentStep = (
+    overallProgress: number,
+    totalSubsections: number,
+    completedSubsections: number,
+    workflowData: any
+  ): string => {
+    // Check if all training is completed
+    const trainingCompleted = totalSubsections > 0 && completedSubsections === totalSubsections;
+    
+    if (!trainingCompleted) {
+      return 'Training';
+    }
+    
+    // If no workflow exists yet, user is ready for exam
+    if (!workflowData) {
+      return 'Exam';
+    }
+    
+    // Check workflow status
+    if (workflowData.subscription_status === 'paid') {
+      return 'Certified';
+    }
+    
+    if (workflowData.contract_status === 'signed') {
+      return 'Subscription';
+    }
+    
+    if (workflowData.admin_approval_status === 'approved') {
+      return 'Contract';
+    }
+    
+    // If exam is passed or approved by admin, next step is contract
+    if (workflowData.exam_status === 'passed' || workflowData.admin_approval_status === 'approved') {
+      return 'Contract';
+    }
+    
+    // Default to exam if workflow exists but not completed
+    return 'Exam';
+  };
+
+  // Function to get badge variant for current step
+  const getStepBadgeVariant = (step: string): "default" | "secondary" | "destructive" | "outline" => {
+    switch (step) {
+      case 'Training':
+        return 'secondary';
+      case 'Exam':
+        return 'outline';
+      case 'Contract':
+        return 'default';
+      case 'Subscription':
+        return 'default';
+      case 'Certified':
+        return 'default';
+      default:
+        return 'secondary';
+    }
+  };
 
   const fetchUsers = async (
     currentSortConfig: { key: string; direction: 'asc' | 'desc' },
@@ -146,10 +206,24 @@ const UsersManagement = () => {
 
       if (completionsError) throw completionsError;
 
+      // Get certification workflow data
+      const { data: workflowData, error: workflowError } = await supabase
+        .from('certification_workflows')
+        .select(`
+          user_id,
+          exam_status,
+          contract_status,
+          subscription_status,
+          admin_approval_status
+        `);
+
+      if (workflowError) throw workflowError;
+
       // Process the data
       const usersData: UserData[] = profilesData?.map(profile => {
         const userProgressFiltered = progressData?.filter(p => p.user_id === profile.user_id) || [];
         const userCompletions = completionsData?.filter(c => c.user_id === profile.user_id) || [];
+        const userWorkflow = workflowData?.find(w => w.user_id === profile.user_id) || null;
 
         // Calculate overall progress based on completed subsections in available courses
         const completedSubsections = userProgressFiltered.filter(p =>
@@ -161,6 +235,14 @@ const UsersManagement = () => {
         const overallProgress = totalAvailableSubsections > 0
           ? Math.round((completedSubsections / totalAvailableSubsections) * 100)
           : 0;
+
+        // Determine current step
+        const currentStep = getCurrentStep(
+          overallProgress,
+          totalAvailableSubsections,
+          completedSubsections,
+          userWorkflow
+        );
 
         return {
           id: profile.user_id,
@@ -175,6 +257,7 @@ const UsersManagement = () => {
             completed_courses: userCompletions.length,
             overall_progress: overallProgress,
           },
+          current_step: currentStep,
         };
       }) || [];
 
@@ -289,7 +372,7 @@ const UsersManagement = () => {
                   )}
                 </TableHead>
                 <TableHead>Current Course Progress</TableHead>
-                <TableHead>Completion Rate</TableHead>
+                <TableHead>Current Step</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -332,14 +415,10 @@ const UsersManagement = () => {
                   </TableCell>
 
                   <TableCell>
-                    <div className="text-center">
-                      <div className="text-lg font-semibold">
-                        {user.course_progress.completed_courses}/
-                        {user.course_progress.total_courses}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Courses completed
-                      </div>
+                    <div className="flex justify-center">
+                      <Badge variant={getStepBadgeVariant(user.current_step)}>
+                        {user.current_step}
+                      </Badge>
                     </div>
                   </TableCell>
                 </TableRow>
