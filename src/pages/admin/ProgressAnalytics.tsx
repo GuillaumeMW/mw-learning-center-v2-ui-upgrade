@@ -10,6 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { Download, Search, Filter, TrendingUp, Users, BookOpen, Award, Clock } from 'lucide-react';
 import { format } from 'date-fns';
+import CertificationFunnelKanban from '@/components/admin/CertificationFunnelKanban';
 
 interface SectionAnalytics {
   section_id: string;
@@ -472,6 +473,9 @@ const ProgressAnalytics = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Certification Funnel */}
+      <CertificationFunnelKanban />
 
       {/* View Type Selector */}
       <Card>
