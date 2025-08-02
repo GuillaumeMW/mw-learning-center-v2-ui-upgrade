@@ -193,36 +193,6 @@ const CertificationFunnelKanban = () => {
             );
           })}
         </div>
-        
-        <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-          <h4 className="font-medium mb-2">Conversion Summary</h4>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div>
-              <span className="text-muted-foreground">Training → Exam:</span>
-              <span className="ml-2 font-medium">
-                {calculatePercentage(stats.completed_exams, stats.completed_subsections).toFixed(1)}%
-              </span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Exam → Contract:</span>
-              <span className="ml-2 font-medium">
-                {calculatePercentage(stats.completed_contracts, stats.completed_exams).toFixed(1)}%
-              </span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Contract → Subscription:</span>
-              <span className="ml-2 font-medium">
-                {calculatePercentage(stats.completed_subscriptions, stats.completed_contracts).toFixed(1)}%
-              </span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Overall Completion:</span>
-              <span className="ml-2 font-medium">
-                {calculatePercentage(stats.completed_subscriptions, stats.total_users).toFixed(1)}%
-              </span>
-            </div>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );
