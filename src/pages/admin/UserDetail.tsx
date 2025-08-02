@@ -180,9 +180,19 @@ const UserDetail = () => {
     if (!userId) return;
     
     try {
+      // Get the current session to ensure we have a valid token
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        throw new Error('No valid session found');
+      }
+
       // Get secure user data including email from edge function
       const { data: secureUserResponse, error: secureUserError } = await supabase.functions.invoke('fetch-user-data-for-admin', {
-        body: { userId }
+        body: { userId },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        }
       });
 
       if (secureUserError) throw secureUserError;

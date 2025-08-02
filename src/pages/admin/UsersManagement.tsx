@@ -120,9 +120,19 @@ const UsersManagement = () => {
   ) => {
     setLoading(true);
     try {
-      // Call the secure edge function to get user data
+      // Get the current session to ensure we have a valid token
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        throw new Error('No valid session found');
+      }
+
+      // Call the secure edge function to get user data with explicit headers
       const { data: usersResponse, error: usersError } = await supabase.functions.invoke('fetch-user-data-for-admin', {
-        body: {} // Fetch all users
+        body: {}, // Fetch all users
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        }
       });
 
       if (usersError) throw usersError;

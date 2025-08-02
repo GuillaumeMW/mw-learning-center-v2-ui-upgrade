@@ -116,8 +116,19 @@ const CertificationReview = () => {
 
       // Get secure user data including emails for eligible users
       const eligibleUserIds = eligibleUsers.map(u => u.user_id);
+      
+      // Get the current session to ensure we have a valid token
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        throw new Error('No valid session found');
+      }
+
       const { data: secureUserResponse, error: secureUserError } = await supabase.functions.invoke('fetch-user-data-for-admin', {
-        body: { userIds: eligibleUserIds }
+        body: { userIds: eligibleUserIds },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        }
       });
 
       if (secureUserError) throw secureUserError;
