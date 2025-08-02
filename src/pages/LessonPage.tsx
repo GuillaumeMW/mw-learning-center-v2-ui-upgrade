@@ -293,8 +293,8 @@ const LessonPage = () => {
           </CardContent>
         </Card>
 
-        {/* Comments Section */}
-        <CommentThread lessonId={lessonId!} className="mb-8" />
+        {/* Comments Section - Hidden for now */}
+        {/* <CommentThread lessonId={lessonId!} className="mb-8" /> */}
 
         {/* Action Buttons */}
         <div className="flex items-center justify-between">

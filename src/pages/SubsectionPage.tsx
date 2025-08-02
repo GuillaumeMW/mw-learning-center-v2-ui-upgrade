@@ -502,8 +502,8 @@ export const SubsectionPage = () => {
         </Button>
       </div>
 
-      {/* Comments */}
-      <CommentThread subsectionId={subsection.id} />
+      {/* Comments - Hidden for now */}
+      {/* <CommentThread subsectionId={subsection.id} /> */}
     </div>
   );
 };

@@ -397,12 +397,12 @@ export const CourseStructure = ({ courseId, onProgressUpdate }: CourseStructureP
                   </div>
                 )}
 
-                {/* Comments Section */}
-                <div className="border-t border-gray-200 pt-6">
+                {/* Comments Section - Hidden for now */}
+                {/* <div className="border-t border-gray-200 pt-6">
                   <CommentThread 
                     subsectionId={selectedSubsection.id}
                   />
-                </div>
+                </div> */}
               </div>
             </CardContent>
           </Card>
