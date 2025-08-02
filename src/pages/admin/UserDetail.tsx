@@ -29,6 +29,7 @@ import {
   FileText
 } from 'lucide-react';
 import { useState as useReactState, useEffect as useReactEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow, format } from 'date-fns';
 
 // Certification Status Component
@@ -173,6 +174,7 @@ const UserDetail = () => {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, session } = useAuth();
   const [userData, setUserData] = useState<UserDetailData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -180,18 +182,22 @@ const UserDetail = () => {
     if (!userId) return;
     
     try {
-      // Get the current session to ensure we have a valid token
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError || !session) {
-        throw new Error('No valid session found');
+      // Check if user is authenticated and has a valid session
+      if (!user || !session) {
+        toast({
+          title: 'Authentication Error',
+          description: 'You must be logged in as an admin to view this data',
+          variant: 'destructive',
+        });
+        setLoading(false);
+        return;
       }
 
       // Get secure user data including email from edge function
       const { data: secureUserResponse, error: secureUserError } = await supabase.functions.invoke('fetch-user-data-for-admin', {
         body: { userId },
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          'Authorization': `Bearer ${session.access_token}`,
         }
       });
 

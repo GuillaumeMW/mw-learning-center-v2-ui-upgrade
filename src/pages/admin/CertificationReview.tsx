@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Loader2, ClipboardCheck, CheckCircle, XCircle, Eye, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import {
@@ -43,6 +44,7 @@ const CertificationReview = () => {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user, session } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -117,17 +119,21 @@ const CertificationReview = () => {
       // Get secure user data including emails for eligible users
       const eligibleUserIds = eligibleUsers.map(u => u.user_id);
       
-      // Get the current session to ensure we have a valid token
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError || !session) {
-        throw new Error('No valid session found');
+      // Check if user is authenticated and has a valid session
+      if (!user || !session) {
+        toast({
+          title: 'Authentication Error',
+          description: 'You must be logged in as an admin to view this data',
+          variant: 'destructive',
+        });
+        setLoading(false);
+        return;
       }
 
       const { data: secureUserResponse, error: secureUserError } = await supabase.functions.invoke('fetch-user-data-for-admin', {
         body: { userIds: eligibleUserIds },
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          'Authorization': `Bearer ${session.access_token}`,
         }
       });
 

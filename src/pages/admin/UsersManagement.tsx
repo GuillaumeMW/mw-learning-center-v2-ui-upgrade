@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -52,6 +53,7 @@ const UsersManagement = () => {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { user, session } = useAuth();
 
   // Function to determine current step based on progress and workflow status
   const getCurrentStep = (
@@ -120,18 +122,22 @@ const UsersManagement = () => {
   ) => {
     setLoading(true);
     try {
-      // Get the current session to ensure we have a valid token
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError || !session) {
-        throw new Error('No valid session found');
+      // Check if user is authenticated and has a valid session
+      if (!user || !session) {
+        toast({
+          title: 'Authentication Error',
+          description: 'You must be logged in as an admin to view this data',
+          variant: 'destructive',
+        });
+        setLoading(false);
+        return;
       }
 
-      // Call the secure edge function to get user data with explicit headers
+      // Call the secure edge function to get user data with the session token
       const { data: usersResponse, error: usersError } = await supabase.functions.invoke('fetch-user-data-for-admin', {
         body: {}, // Fetch all users
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          'Authorization': `Bearer ${session.access_token}`,
         }
       });
 
