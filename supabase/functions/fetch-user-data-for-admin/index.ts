@@ -11,29 +11,29 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Create client with anon key for auth verification
-    const supabaseAuth = createClient(
-      supabaseUrl,
-      Deno.env.get('SUPABASE_ANON_KEY')!,
-      {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
-      }
-    )
-
-    // Verify user is authenticated
-    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser()
-    if (authError || !user) {
-      console.error('Authentication failed:', authError)
+    // Get authorization header
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
       return new Response(
         JSON.stringify({ error: 'Unauthorized' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    // Create service role client for admin operations
+    const token = authHeader.split(' ')[1]
+    
+    // Create service role client for all operations
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+
+    // Verify user is authenticated using service role
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+    if (authError || !user) {
+      console.error('Authentication failed:', authError)
+      return new Response(
+        JSON.stringify({ error: 'Invalid or expired token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
 
     // Verify user has admin role
     const { data: hasAdminRole, error: roleError } = await supabaseAdmin
