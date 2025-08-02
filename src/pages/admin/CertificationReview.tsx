@@ -35,6 +35,7 @@ interface CertificationWorkflowWithProfile {
   updated_at: string;
   first_name: string;
   last_name: string;
+  email: string;
 }
 
 const CertificationReview = () => {
@@ -113,7 +114,7 @@ const CertificationReview = () => {
         return;
       }
 
-      // Get profile information for eligible users
+      // Get profile information and email for eligible users
       const eligibleUserIds = eligibleUsers.map(u => u.user_id);
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
@@ -121,6 +122,7 @@ const CertificationReview = () => {
         .in('user_id', eligibleUserIds);
 
       if (profileError) throw profileError;
+
 
       // Now check existing certification workflows for these users
       const { data: existingWorkflows, error: workflowError } = await supabase
@@ -168,7 +170,8 @@ const CertificationReview = () => {
           workflowsToDisplay.push({
             ...workflow,
             first_name: profile?.first_name || '',
-            last_name: profile?.last_name || ''
+            last_name: profile?.last_name || '',
+            email: `${workflow.user_id.slice(0, 8)}@temp.com` // Placeholder for email
           });
         }
       }
@@ -286,12 +289,9 @@ const CertificationReview = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Student</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
                     <TableHead>Level</TableHead>
-                    <TableHead>Exam Status</TableHead>
-                    <TableHead>Contract</TableHead>
-                    <TableHead>Subscription</TableHead>
-                    <TableHead>Current Step</TableHead>
                     <TableHead>Submitted</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
@@ -305,19 +305,12 @@ const CertificationReview = () => {
                         </div>
                       </TableCell>
                       <TableCell>
+                        <div className="text-sm text-muted-foreground">
+                          {workflow.email}
+                        </div>
+                      </TableCell>
+                      <TableCell>
                         <Badge variant="outline">Level {workflow.level}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        {getStatusBadge(workflow.exam_status, 'exam')}
-                      </TableCell>
-                      <TableCell>
-                        {getStatusBadge(workflow.contract_status, 'contract')}
-                      </TableCell>
-                      <TableCell>
-                        {getStatusBadge(workflow.subscription_status, 'subscription')}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{workflow.current_step}</Badge>
                       </TableCell>
                       <TableCell>
                         {formatDistanceToNow(new Date(workflow.created_at), { addSuffix: true })}
