@@ -34,9 +34,9 @@ const CertificationFunnelKanban = () => {
         .from('profiles')
         .select('*', { count: 'exact' });
 
-      // Get users who completed all subsections (have course completions)
+      // Get users who completed all subsections (have certification workflows created)
       const { count: completedSubsections } = await supabase
-        .from('course_completions')
+        .from('certification_workflows')
         .select('*', { count: 'exact' });
 
       // Get users who completed exams (passed exams)
