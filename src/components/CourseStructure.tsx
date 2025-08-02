@@ -19,7 +19,9 @@ import {
   HelpCircle,
   Clock,
   BookOpen,
-  Download
+  Download,
+  ChevronLeft,
+  ArrowRight
 } from "lucide-react";
 
 interface CourseStructureProps {
@@ -206,6 +208,49 @@ export const CourseStructure = ({ courseId, onProgressUpdate }: CourseStructureP
     setExpandedSections(newExpanded);
   };
 
+  // Navigation helpers
+  const getAllSubsections = () => {
+    const allSubs: Subsection[] = [];
+    sections.forEach(section => {
+      if (section.subsections) {
+        allSubs.push(...section.subsections);
+      }
+    });
+    return allSubs;
+  };
+
+  const getCurrentSubsectionIndex = () => {
+    if (!selectedSubsection) return -1;
+    const allSubs = getAllSubsections();
+    return allSubs.findIndex(sub => sub.id === selectedSubsection.id);
+  };
+
+  const getNextSubsection = () => {
+    const allSubs = getAllSubsections();
+    const currentIndex = getCurrentSubsectionIndex();
+    return currentIndex < allSubs.length - 1 ? allSubs[currentIndex + 1] : null;
+  };
+
+  const getPreviousSubsection = () => {
+    const allSubs = getAllSubsections();
+    const currentIndex = getCurrentSubsectionIndex();
+    return currentIndex > 0 ? allSubs[currentIndex - 1] : null;
+  };
+
+  const handleNextSubsection = () => {
+    const next = getNextSubsection();
+    if (next) {
+      setSelectedSubsection(next);
+    }
+  };
+
+  const handlePreviousSubsection = () => {
+    const previous = getPreviousSubsection();
+    if (previous) {
+      setSelectedSubsection(previous);
+    }
+  };
+
   const completedItems = new Set(userProgress.filter(p => p.completed_at).map(p => p.subsection_id).filter(Boolean));
 
   if (loading) {
@@ -311,22 +356,20 @@ export const CourseStructure = ({ courseId, onProgressUpdate }: CourseStructureP
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {completedItems.has(selectedSubsection.id) && (
-                      <Badge variant="outline" className="text-green-600 border-green-600">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        Completed
-                      </Badge>
-                    )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleMarkComplete(selectedSubsection.id)}
-                      disabled={completedItems.has(selectedSubsection.id)}
-                    >
-                      {completedItems.has(selectedSubsection.id) ? "Completed" : "Mark Complete"}
-                    </Button>
-                  </div>
+                   <div className="flex items-center gap-2">
+                     <Button
+                       variant="outline"
+                       size="sm"
+                       onClick={() => handleMarkComplete(selectedSubsection.id)}
+                       disabled={completedItems.has(selectedSubsection.id)}
+                       className={completedItems.has(selectedSubsection.id) ? "bg-green-500 hover:bg-green-600 text-white border-green-500" : ""}
+                     >
+                       {completedItems.has(selectedSubsection.id) && (
+                         <CheckCircle className="h-3 w-3 mr-1" />
+                       )}
+                       {completedItems.has(selectedSubsection.id) ? "Completed" : "Mark Complete"}
+                     </Button>
+                   </div>
                 </div>
               </div>
 
@@ -403,6 +446,29 @@ export const CourseStructure = ({ courseId, onProgressUpdate }: CourseStructureP
                     subsectionId={selectedSubsection.id}
                   />
                 </div> */}
+
+                {/* Navigation Buttons */}
+                <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+                  <Button
+                    variant="outline"
+                    onClick={handlePreviousSubsection}
+                    disabled={!getPreviousSubsection()}
+                    className="flex items-center gap-2"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onClick={handleNextSubsection}
+                    disabled={!getNextSubsection()}
+                    className="flex items-center gap-2"
+                  >
+                    Next
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

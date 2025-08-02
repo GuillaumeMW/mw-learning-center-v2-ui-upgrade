@@ -485,17 +485,44 @@ export const SubsectionPage = () => {
           Previous
         </Button>
 
-        {!isCompleted && user && (
-          <Button onClick={handleCompleteSubsection} disabled={completing}>
-            <CheckCircle className="mr-2 h-4 w-4" />
-            {completing ? "Marking Complete..." : "Mark as Complete"}
+        <div className="flex items-center gap-4">
+          {!isCompleted && user && (
+            <Button onClick={handleCompleteSubsection} disabled={completing}>
+              <CheckCircle className="mr-2 h-4 w-4" />
+              {completing ? "Marking Complete..." : "Mark as Complete"}
+            </Button>
+          )}
+
+          <Button
+            variant="outline"
+            onClick={handleNextSubsection}
+            disabled={!getNextSubsection()}
+          >
+            Next
+            <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
-        )}
+        </div>
+      </div>
+
+      {/* Mobile Navigation - Additional bottom navigation for mobile */}
+      <div className="md:hidden flex items-center justify-between pt-4 border-t">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handlePreviousSubsection}
+          disabled={!getPreviousSubsection()}
+          className="flex-1 mr-2"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Previous
+        </Button>
 
         <Button
           variant="outline"
+          size="sm"
           onClick={handleNextSubsection}
           disabled={!getNextSubsection()}
+          className="flex-1 ml-2"
         >
           Next
           <ArrowRight className="ml-2 h-4 w-4" />
