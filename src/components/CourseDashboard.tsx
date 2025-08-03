@@ -317,6 +317,7 @@ const CourseDashboard = () => {
             className="text-white hover:opacity-90 px-6 py-2 text-base font-medium"
             onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
           >
+            <BookOpen className="h-4 w-4 mr-2" />
             Start Level 1 Training
           </Button>
         </div>
@@ -363,6 +364,7 @@ const CourseDashboard = () => {
               className="text-white hover:opacity-90 px-6 py-2 text-base font-medium"
               onClick={() => navigate('/certification/1/payment')}
             >
+              <CreditCard className="h-4 w-4 mr-2" />
               Activate My Subscription
             </Button>
           </div>
@@ -692,6 +694,7 @@ const CourseDashboard = () => {
               className="text-white hover:opacity-90 px-6 py-2 text-base font-medium"
               onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
             >
+              <ArrowRight className="h-4 w-4 mr-2" />
               Continue Level 1 Training
             </Button>
           </div>
