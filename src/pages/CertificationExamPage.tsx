@@ -301,7 +301,6 @@ const CertificationExamPage = () => {
               <div className="pt-4">
                 <Button 
                   size="lg" 
-                  className="w-full"
                   onClick={() => window.open(examUrl, '_blank')}
                 >
                   <BookOpen className="h-4 w-4 mr-2" />
