@@ -577,6 +577,7 @@ const CourseDashboard = () => {
               className="text-white hover:opacity-90 px-6 py-2 text-base font-medium"
               onClick={() => navigate('/certification/1/exam')}
             >
+              <GraduationCap className="h-4 w-4 mr-2" />
               Start Certification Exam
             </Button>
           </div>
