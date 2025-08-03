@@ -256,7 +256,6 @@ const ContractSigningPage = () => {
               <div className="pt-4">
                 <Button 
                   size="lg" 
-                  className="w-full"
                   onClick={handleSignContract}
                   disabled={submitting}
                 >

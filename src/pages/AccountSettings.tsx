@@ -207,7 +207,6 @@ const AccountSettings = () => {
               <Button 
                 onClick={handlePasswordChange} 
                 disabled={isLoading || !passwordData.newPassword}
-                className="w-full"
               >
                 <Save className="mr-2 h-4 w-4" />
                 Update Password
@@ -250,7 +249,6 @@ const AccountSettings = () => {
               <Button 
                 onClick={handleEmailChange} 
                 disabled={isLoading || emailData.newEmail === user?.email}
-                className="w-full"
               >
                 <Save className="mr-2 h-4 w-4" />
                 Update Email

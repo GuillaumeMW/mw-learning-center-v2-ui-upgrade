@@ -294,7 +294,6 @@ const Profile = () => {
               <Button 
                 onClick={handleUpdateProfile} 
                 disabled={isLoading}
-                className="w-full"
               >
                 <Save className="mr-2 h-4 w-4" />
                 Save Changes

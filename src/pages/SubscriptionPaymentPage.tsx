@@ -270,7 +270,6 @@ const SubscriptionPaymentPage = () => {
               <div className="pt-4">
                 <Button 
                   size="lg" 
-                  className="w-full"
                   onClick={handlePayment}
                   disabled={processing}
                 >
