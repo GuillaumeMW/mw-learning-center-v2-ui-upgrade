@@ -296,7 +296,6 @@ const CoursePage = () => {
                   </p>
                   <Button 
                     onClick={() => navigate(`/certification/${course.level}/exam`)}
-                    className="w-full"
                   >
                     <GraduationCap className="h-4 w-4 mr-2" />
                     Start Certification Process
