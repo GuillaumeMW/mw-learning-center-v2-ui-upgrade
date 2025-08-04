@@ -32,6 +32,14 @@ serve(async (req) => {
     const body = await req.text();
     const signature = req.headers.get("stripe-signature");
 
+    logStep("Webhook details for debugging", { 
+      hasBody: !!body, 
+      bodyLength: body?.length,
+      hasSignature: !!signature,
+      signatureStart: signature?.substring(0, 20),
+      webhookSecretStart: webhookSecret?.substring(0, 10)
+    });
+
     if (!signature) {
       throw new Error("Missing Stripe signature");
     }
@@ -41,7 +49,12 @@ serve(async (req) => {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
       logStep("Webhook signature verified", { eventType: event.type });
     } catch (err) {
-      logStep("ERROR: Webhook signature verification failed", { error: err });
+      logStep("ERROR: Webhook signature verification failed", { 
+        error: err,
+        errorMessage: err instanceof Error ? err.message : String(err),
+        bodyLength: body.length,
+        signaturePresent: !!signature
+      });
       throw new Error("Invalid webhook signature");
     }
 
