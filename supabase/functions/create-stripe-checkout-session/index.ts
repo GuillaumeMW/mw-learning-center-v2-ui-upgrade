@@ -97,6 +97,16 @@ serve(async (req) => {
         amount: 5900, // $59.00
         name: "MovingWaldo RS Level 1 Certification",
         description: "Monthly certification fee for individuals who have completed RS Level 1 training. This subscription maintains your certified status and provides access to tools, support, and a platform to earn commissions on moves booked through your relocation specialist activity. No long-term commitment."
+      },
+      2: { 
+        amount: 5900, // $59.00 - same price for now
+        name: "MovingWaldo RS Level 2 Certification",
+        description: "Monthly certification fee for Level 2 certification maintenance."
+      },
+      3: { 
+        amount: 5900, // $59.00 - same price for now
+        name: "MovingWaldo RS Level 3 Certification", 
+        description: "Monthly certification fee for Level 3 certification maintenance."
       }
     };
 
@@ -119,10 +129,10 @@ serve(async (req) => {
           price_data: {
             currency: "usd",
             product_data: { 
-              name: pricing.name,
-              description: pricing.description
+              name: pricing?.name || `Level ${level} Certification`,
+              description: pricing?.description || `Monthly certification fee for Level ${level}`
             },
-            unit_amount: pricing.amount,
+            unit_amount: pricing?.amount || 5900,
             recurring: {
               interval: "month",
               interval_count: 1
