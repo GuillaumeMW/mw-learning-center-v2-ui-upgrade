@@ -25,9 +25,11 @@ const SubscriptionPaymentPage = () => {
   const [workflow, setWorkflow] = useState<CertificationWorkflow | null>(null);
 
   const levelPricing = {
-    1: { price: 29.99, description: 'Level 1 Relocation Specialist Certification' },
-    2: { price: 49.99, description: 'Level 2 Advanced Relocation Specialist Certification' },
-    3: { price: 79.99, description: 'Level 3 Expert Relocation Specialist Certification' }
+    1: { 
+      price: 59.00, 
+      description: 'MovingWaldo RS Level 1 Certification',
+      fullDescription: 'Monthly certification fee for individuals who have completed RS Level 1 training. This subscription maintains your certified status and provides access to tools, support, and a platform to earn commissions on moves booked through your relocation specialist activity. No long-term commitment.'
+    }
   };
 
   useEffect(() => {
@@ -252,18 +254,27 @@ const SubscriptionPaymentPage = () => {
             <CardContent className="space-y-6">
               <div className="text-center py-6">
                 <div className="text-4xl font-bold text-primary">${pricing.price}</div>
-                <div className="text-muted-foreground">per month</div>
+                <div className="text-muted-foreground">per month (auto-renewing)</div>
+                <div className="text-xs text-muted-foreground mt-2">
+                  Taxes will be calculated based on your billing address
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {pricing.fullDescription}
+                </p>
               </div>
               
               <div className="space-y-3">
                 <h4 className="font-semibold">Your subscription includes:</h4>
                 <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                  <li>Certified Relocation Specialist status</li>
-                  <li>Access to exclusive resources and tools</li>
-                  <li>Ongoing professional development content</li>
+                  <li>Certified Relocation Specialist status maintenance</li>
+                  <li>Access to commission-earning platform and tools</li>
+                  <li>Professional development resources</li>
                   <li>Technical support and assistance</li>
                   <li>Marketing materials and certification badge</li>
-                  <li>Community access and networking opportunities</li>
+                  <li>Business tax identification support (for business customers)</li>
                 </ul>
               </div>
               
@@ -272,6 +283,7 @@ const SubscriptionPaymentPage = () => {
                   size="lg" 
                   onClick={handlePayment}
                   disabled={processing}
+                  className="w-full"
                 >
                   {processing ? (
                     <>
@@ -281,15 +293,18 @@ const SubscriptionPaymentPage = () => {
                   ) : (
                     <>
                       <CreditCard className="h-4 w-4 mr-2" />
-                      Pay ${pricing.price}/month
+                      Subscribe for ${pricing.price}/month
                     </>
                   )}
                 </Button>
               </div>
               
-              <p className="text-xs text-muted-foreground text-center">
-                You will be redirected to Stripe to complete your payment securely
-              </p>
+              <div className="text-xs text-muted-foreground text-center space-y-1">
+                <p>You will be redirected to Stripe to complete your subscription securely</p>
+                <p>• Business customers can add tax information during checkout</p>
+                <p>• Cancel anytime - no long-term commitment required</p>
+                <p>• Automatic tax calculation based on billing address</p>
+              </div>
             </CardContent>
           </Card>
         )}

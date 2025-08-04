@@ -91,12 +91,13 @@ serve(async (req) => {
       logStep("No existing Stripe customer found");
     }
 
-    // Define default pricing based on level if no price_id provided
+    // Define subscription pricing based on level
     const levelPricing = {
-      1: { amount: 2999, name: "Level 1 Certification" }, // $29.99
-      2: { amount: 4999, name: "Level 2 Certification" }, // $49.99
-      3: { amount: 7999, name: "Level 3 Certification" }, // $79.99
-      4: { amount: 9999, name: "Level 4 Certification" }, // $99.99
+      1: { 
+        amount: 5900, // $59.00
+        name: "MovingWaldo RS Level 1 Certification",
+        description: "Monthly certification fee for individuals who have completed RS Level 1 training. This subscription maintains your certified status and provides access to tools, support, and a platform to earn commissions on moves booked through your relocation specialist activity. No long-term commitment."
+      }
     };
 
     const pricing = levelPricing[level as keyof typeof levelPricing];
@@ -104,7 +105,7 @@ serve(async (req) => {
       throw new Error(`No pricing configured for level ${level}`);
     }
 
-    // Create checkout session
+    // Create subscription checkout session
     const sessionConfig: any = {
       customer: customerId,
       customer_email: customerId ? undefined : userEmail,
@@ -119,16 +120,30 @@ serve(async (req) => {
             currency: "usd",
             product_data: { 
               name: pricing.name,
-              description: `Relocation Specialist Level ${level} Certification`
+              description: pricing.description
             },
             unit_amount: pricing.amount,
+            recurring: {
+              interval: "month",
+              interval_count: 1
+            }
           },
           quantity: 1,
         }
       ],
-      mode: "payment",
-      success_url: `${req.headers.get("origin")}/certification-success?level=${level}`,
-      cancel_url: `${req.headers.get("origin")}/certification-payment?level=${level}`,
+      mode: "subscription",
+      allow_promotion_codes: true,
+      automatic_tax: {
+        enabled: true,
+      },
+      customer_update: {
+        address: 'auto',
+      },
+      tax_id_collection: {
+        enabled: true,
+      },
+      success_url: `${req.headers.get("origin")}/certification-success?level=${level}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get("origin")}/certification/${level}/payment`,
       client_reference_id: `${user_id}-${level}`, // For webhook identification
       metadata: {
         user_id,
