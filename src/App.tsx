@@ -26,6 +26,7 @@ import CertificationReview from "./pages/admin/CertificationReview";
 import CertificationExamPage from "./pages/CertificationExamPage";
 import ContractSigningPage from "./pages/ContractSigningPage";
 import SubscriptionPaymentPage from "./pages/SubscriptionPaymentPage";
+import CertificationSuccessPage from "./pages/CertificationSuccessPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -148,6 +149,14 @@ const App = () => (
                   <Layout>
                     <SubscriptionPaymentPage />
                   </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/certification-success" 
+              element={
+                <ProtectedRoute>
+                  <CertificationSuccessPage />
                 </ProtectedRoute>
               } 
             />
