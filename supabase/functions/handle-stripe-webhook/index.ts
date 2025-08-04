@@ -23,6 +23,13 @@ serve(async (req) => {
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
     
+    logStep("Environment check", { 
+      hasStripeKey: !!stripeKey, 
+      hasWebhookSecret: !!webhookSecret,
+      stripeKeyPrefix: stripeKey?.substring(0, 7),
+      webhookSecretPrefix: webhookSecret?.substring(0, 7)
+    });
+    
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not configured");
     if (!webhookSecret) throw new Error("STRIPE_WEBHOOK_SECRET is not configured");
 
