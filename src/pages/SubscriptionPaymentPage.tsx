@@ -92,9 +92,10 @@ const SubscriptionPaymentPage = () => {
       }
     } catch (error) {
       console.error('Error creating checkout session:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       toast({
         title: 'Error',
-        description: 'Failed to start payment process',
+        description: `Failed to start payment process: ${error.message || 'Unknown error'}`,
         variant: 'destructive',
       });
     } finally {

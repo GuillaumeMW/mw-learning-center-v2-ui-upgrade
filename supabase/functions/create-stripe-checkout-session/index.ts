@@ -143,15 +143,6 @@ serve(async (req) => {
       ],
       mode: "subscription",
       allow_promotion_codes: true,
-      automatic_tax: {
-        enabled: true,
-      },
-      customer_update: {
-        address: 'auto',
-      },
-      tax_id_collection: {
-        enabled: true,
-      },
       success_url: `${req.headers.get("origin")}/certification-success?level=${level}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get("origin")}/certification/${level}/payment`,
       client_reference_id: `${user_id}-${level}`, // For webhook identification
