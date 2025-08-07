@@ -53,10 +53,11 @@ const AdminDashboard = () => {
         .from('courses')
         .select('*', { count: 'exact', head: true });
 
-      // Fetch total completions
+      // Fetch total completions (certified users)
       const { count: completionsCount } = await supabase
-        .from('course_completions')
-        .select('*', { count: 'exact', head: true });
+        .from('certification_workflows')
+        .select('*', { count: 'exact', head: true })
+        .or('current_step.eq.completed,subscription_status.eq.paid');
 
       // Fetch pending certifications count
       const { count: pendingCertificationsCount } = await supabase

@@ -230,19 +230,14 @@ const UsersManagement = () => {
 
       const totalAvailableSubsections = subsectionsData?.length || 0;
 
-      // Get course completions and workflow data for pagination subset
-      const { data: completionsData, error: completionsError } = await supabase
-        .from('course_completions')
-        .select('user_id, course_id')
-        .in('course_id', availableCourseIds)
-        .in('user_id', paginatedUserIds);
-
-      if (completionsError) throw completionsError;
-
+      // Get certification workflows for pagination subset
       const { data: workflowData, error: workflowError } = await supabase
         .from('certification_workflows')
         .select(`
           user_id,
+          course_id,
+          level,
+          current_step,
           exam_status,
           contract_status,
           subscription_status,
@@ -255,8 +250,8 @@ const UsersManagement = () => {
       // Process the paginated user data
       const processedUsersData: UserData[] = paginatedUsers.map((user: any) => {
         const userProgressFiltered = progressData?.filter(p => p.user_id === user.user_id) || [];
-        const userCompletions = completionsData?.filter(c => c.user_id === user.user_id) || [];
-        const userWorkflow = workflowData?.find(w => w.user_id === user.user_id) || null;
+        const workflowsForUser = (workflowData || []).filter(w => w.user_id === user.user_id);
+        const userWorkflow = workflowsForUser[0] || null;
 
         // Calculate overall progress based on completed subsections in available courses
         const completedSubsections = userProgressFiltered.filter(p =>
@@ -286,7 +281,10 @@ const UsersManagement = () => {
           phone_number: user.phone_number,
           course_progress: {
             total_courses: availableCourseIds.length,
-            completed_courses: userCompletions.length,
+            completed_courses: workflowsForUser.filter(w => (
+              (w.current_step === 'completed' || w.subscription_status === 'paid') &&
+              availableCourseIds.includes(w.course_id)
+            )).length,
             overall_progress: overallProgress,
           },
           current_step: currentStep,

@@ -203,21 +203,22 @@ const ProgressAnalytics = () => {
 
       const uniqueStartedUsers = new Set(startedUsers.map(p => p.user_id));
 
-      // Get users who completed this course
-      const { data: completedUsers, error: completedError } = await supabase
-        .from('course_completions')
-        .select('user_id, completed_at')
-        .eq('course_id', course.id);
+      // Get users who completed this course (certified)
+      const { data: certifiedWorkflows, error: certifiedError } = await supabase
+        .from('certification_workflows')
+        .select('user_id, completed_at, subscription_status, current_step')
+        .eq('course_id', course.id)
+        .or('current_step.eq.completed,subscription_status.in.(active,paid)');
 
-      if (completedError) throw completedError;
+      if (certifiedError) throw certifiedError;
 
-      // Calculate average completion time for completed users
+      // Calculate average completion time for certified users
       let avgCompletionTime = null;
-      if (completedUsers.length > 0) {
-        const completionTimes = [];
-        for (const completion of completedUsers) {
+      if (certifiedWorkflows && certifiedWorkflows.length > 0) {
+        const completionTimes = [] as number[];
+        for (const completion of certifiedWorkflows) {
           const userStarted = startedUsers.find(p => p.user_id === completion.user_id);
-          if (userStarted) {
+          if (userStarted && completion.completed_at) {
             const startTime = new Date(userStarted.created_at);
             const endTime = new Date(completion.completed_at);
             const timeDiff = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60); // hours
@@ -235,8 +236,8 @@ const ProgressAnalytics = () => {
         course_level: course.level,
         total_sections: course.sections.length,
         users_started: uniqueStartedUsers.size,
-        users_completed: completedUsers.length,
-        completion_rate: uniqueStartedUsers.size > 0 ? (completedUsers.length / uniqueStartedUsers.size) * 100 : 0,
+        users_completed: certifiedWorkflows?.length || 0,
+        completion_rate: uniqueStartedUsers.size > 0 ? (((certifiedWorkflows?.length || 0) / uniqueStartedUsers.size) * 100) : 0,
         avg_completion_time_hours: avgCompletionTime
       });
     }
@@ -275,10 +276,11 @@ const ProgressAnalytics = () => {
         .from('sections')
         .select('*', { count: 'exact' });
 
-      // Get total course completions
+      // Get total course completions (certified workflows)
       const { count: totalCompletions } = await supabase
-        .from('course_completions')
-        .select('*', { count: 'exact' });
+        .from('certification_workflows')
+        .select('*', { count: 'exact', head: true })
+        .or('current_step.eq.completed,subscription_status.eq.paid');
 
       // Get active users in last 30 days
       const thirtyDaysAgo = new Date();
