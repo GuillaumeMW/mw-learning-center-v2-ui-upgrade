@@ -118,13 +118,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "comments_lesson_id_fkey"
-            columns: ["lesson_id"]
-            isOneToOne: false
-            referencedRelation: "lessons"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "comments_parent_comment_id_fkey"
             columns: ["parent_comment_id"]
             isOneToOne: false
@@ -206,50 +199,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
-      }
-      lessons: {
-        Row: {
-          content: string | null
-          course_id: string
-          created_at: string
-          duration_minutes: number | null
-          id: string
-          order_index: number
-          title: string
-          updated_at: string
-          video_url: string | null
-        }
-        Insert: {
-          content?: string | null
-          course_id: string
-          created_at?: string
-          duration_minutes?: number | null
-          id?: string
-          order_index: number
-          title: string
-          updated_at?: string
-          video_url?: string | null
-        }
-        Update: {
-          content?: string | null
-          course_id?: string
-          created_at?: string
-          duration_minutes?: number | null
-          id?: string
-          order_index?: number
-          title?: string
-          updated_at?: string
-          video_url?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "lessons_course_id_fkey"
-            columns: ["course_id"]
-            isOneToOne: false
-            referencedRelation: "courses"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       profiles: {
         Row: {
@@ -484,13 +433,6 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_progress_lesson_id_fkey"
-            columns: ["lesson_id"]
-            isOneToOne: false
-            referencedRelation: "lessons"
             referencedColumns: ["id"]
           },
         ]
