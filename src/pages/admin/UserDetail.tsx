@@ -67,8 +67,14 @@ const CertificationStatusDisplay = ({ userId }: { userId: string }) => {
   }
 
   const getStatusBadge = (workflow: any) => {
-    if (workflow.subscription_status === 'active') {
-      return <Badge className="bg-green-600">Certified</Badge>;
+    // Consider a workflow completed if either step is completed or subscription is paid/active
+    const isCompleted =
+      workflow.current_step === 'completed' ||
+      workflow.subscription_status === 'paid' ||
+      workflow.subscription_status === 'active';
+
+    if (isCompleted) {
+      return <Badge className="bg-green-600">Completed</Badge>;
     }
     
     switch (workflow.current_step) {
@@ -307,9 +313,14 @@ const UserDetail = () => {
         );
         const courseProgress = totalSubsections > 0 ? Math.round((completedSubsections / totalSubsections) * 100) : 0;
 
-        // Find earliest start date
+        // Find earliest start date and latest completion date
         const allProgress = sections.flatMap(s => s.subsections).map(sub => sub.started_at).filter(Boolean);
         const earliestStart = allProgress.length > 0 ? allProgress.sort()[0] : null;
+        const allCompleted = sections
+          .flatMap(s => s.subsections)
+          .map(sub => sub.completed_at)
+          .filter(Boolean) as string[];
+        const latestCompleted = allCompleted.length > 0 ? allCompleted.sort().slice(-1)[0] : null;
 
         return {
           id: course.id,
@@ -319,14 +330,14 @@ const UserDetail = () => {
           is_available: course.is_available,
           progress: courseProgress,
           started_at: earliestStart,
-          completed_at: courseCompletion?.completed_at || null,
+          completed_at: courseCompletion?.completed_at || (courseProgress === 100 ? latestCompleted : null),
           sections,
         };
       });
 
       // Calculate overall stats
       const totalCourses = coursesData.filter(c => c.is_available).length;
-      const completedCourses = completionsData.length;
+      const completedCourses = processedCourses.filter(c => c.is_available && (c.progress === 100 || !!c.completed_at)).length;
       const totalSubsections = processedCourses.reduce((acc, course) => 
         acc + course.sections.reduce((sAcc, section) => sAcc + section.subsections.length, 0), 0
       );
