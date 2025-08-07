@@ -138,25 +138,35 @@ const CourseDashboard = () => {
   };
 
   const getCourseStatus = (course: Course): CourseStatus => {
-    // Level 1 is available if marked as available
-    if (course.level === 1 && course.is_available) {
-      return 'available';
-    }
-    
-    // Other levels are either locked or coming soon
-    if (course.level > 1) {
-      if (course.is_coming_soon) {
-        return 'locked'; // Locked because previous levels need completion
-      }
-      return 'locked';
-    }
-    
-    // If not available and is coming soon
+    const isWorkflowCompleted = (lvl: number) => {
+      const wf = certificationWorkflows[lvl];
+      return !!(
+        wf && (
+          wf.current_step === 'completed' ||
+          wf.subscription_status === 'active' ||
+          wf.subscription_status === 'paid'
+        )
+      );
+    };
+
+    // Coming soon always locked for users
     if (course.is_coming_soon) {
       return 'coming-soon';
     }
-    
-    return 'locked';
+
+    // If this level already certified, mark completed
+    if (isWorkflowCompleted(course.level)) {
+      return 'completed';
+    }
+
+    // Level 1 availability
+    if (course.level === 1) {
+      return course.is_available ? 'available' : 'locked';
+    }
+
+    // Higher levels unlock when previous level completed
+    const prevCompleted = isWorkflowCompleted(course.level - 1);
+    return prevCompleted && course.is_available ? 'available' : 'locked';
   };
 
   const getCurrentCourse = () => {

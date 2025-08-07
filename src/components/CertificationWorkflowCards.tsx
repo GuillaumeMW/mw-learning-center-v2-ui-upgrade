@@ -38,6 +38,15 @@ const CertificationWorkflowCards = ({
 }: CertificationWorkflowCardsProps) => { 
   const navigate = useNavigate();
 
+  // Consider workflow certified when subscription paid/active or step completed
+  const isCertified = Boolean(
+    certificationWorkflow && (
+      certificationWorkflow.current_step === 'completed' ||
+      certificationWorkflow.subscription_status === 'active' ||
+      certificationWorkflow.subscription_status === 'paid'
+    )
+  );
+
   // Debug logging to see what data we're receiving
   console.log('CertificationWorkflowCards Debug:', {
     course,
@@ -96,7 +105,7 @@ const CertificationWorkflowCards = ({
       icon: DollarSign,
       description: 'Choose a subscription plan to activate your certification.',
       isUnlocked: certificationWorkflow?.contract_status === 'signed',
-      isCompleted: certificationWorkflow?.subscription_status === 'active',
+      isCompleted: isCertified,
       action: () => {
         console.log('Payment card clicked - navigating to:', `/certification/${course.level}/payment`);
         navigate(`/certification/${course.level}/payment`);
@@ -109,8 +118,8 @@ const CertificationWorkflowCards = ({
       title: 'Certified!',
       icon: GraduationCap,
       description: 'Certification complete',
-      isUnlocked: certificationWorkflow?.subscription_status === 'active',
-      isCompleted: certificationWorkflow?.subscription_status === 'active',
+      isUnlocked: isCertified,
+      isCompleted: isCertified,
       action: null,
       actionText: 'Certified!',
       message: 'Congratulations! You are now certified.'
@@ -185,7 +194,11 @@ const CertificationWorkflowCards = ({
   function getPaymentActionText() {
     console.log('getPaymentActionText - contract_status:', certificationWorkflow?.contract_status, 'subscription_status:', certificationWorkflow?.subscription_status);
     if (certificationWorkflow?.contract_status !== 'signed') return 'Locked';
-    if (certificationWorkflow.subscription_status === 'active') return 'Payment Complete';
+    if (
+      certificationWorkflow?.subscription_status === 'active' ||
+      certificationWorkflow?.subscription_status === 'paid' ||
+      certificationWorkflow?.current_step === 'completed'
+    ) return 'Payment Complete';
     return 'Pay Now';
   }
 
@@ -193,7 +206,11 @@ const CertificationWorkflowCards = ({
     if (certificationWorkflow?.contract_status !== 'signed') {
       return 'Sign the contract first to unlock payment.';
     }
-    if (certificationWorkflow.subscription_status === 'active') {
+    if (
+      certificationWorkflow?.subscription_status === 'active' ||
+      certificationWorkflow?.subscription_status === 'paid' ||
+      certificationWorkflow?.current_step === 'completed'
+    ) {
       return 'Payment completed successfully!';
     }
     return 'Complete your certification payment.';
