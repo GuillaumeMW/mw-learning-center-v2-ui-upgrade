@@ -14,7 +14,7 @@ import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import AccountSettings from "./pages/AccountSettings";
 import CoursePage from "./pages/CoursePage";
-import LessonPage from "./pages/LessonPage";
+// Legacy LessonPage removed
 import { SubsectionPage } from "./pages/SubsectionPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UsersManagement from "./pages/admin/UsersManagement";
@@ -61,16 +61,7 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
-            <Route 
-              path="/course/:courseId/lesson/:lessonId" 
-              element={
-                <ProtectedRoute>
-                  <Layout>
-                    <LessonPage />
-                  </Layout>
-                </ProtectedRoute>
-              } 
-            />
+// Legacy lesson route removed
             <Route 
               path="/course/:courseId/subsection/:subsectionId" 
               element={

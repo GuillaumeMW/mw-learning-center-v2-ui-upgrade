@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Course, Lesson, Section } from "@/types/course";
+import { Course, Section } from "@/types/course";
 import { CourseStructure } from "@/components/CourseStructure";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,11 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { 
   ArrowLeft, 
-  Play, 
   CheckCircle, 
-  Clock, 
-  BookOpen, 
-  Users,
   Target,
   GraduationCap,
   FileText
@@ -30,11 +26,11 @@ const CoursePage = () => {
 
   const [course, setCourse] = useState<Course | null>(null);
   const [sections, setSections] = useState<Section[]>([]);
-  const [lessons, setLessons] = useState<Lesson[]>([]);
+  // removed legacy lessons state
   const [completedItems, setCompletedItems] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [courseProgress, setCourseProgress] = useState(0);
-  const [hasStructuredContent, setHasStructuredContent] = useState(false);
+  // removed legacy hasStructuredContent flag
   const [totalItemsCount, setTotalItemsCount] = useState(0);
   const [certificationWorkflow, setCertificationWorkflow] = useState<any>(null);
 
@@ -59,91 +55,43 @@ const CoursePage = () => {
       if (courseError) throw courseError;
       setCourse(courseData);
 
-      // Check if we have sections (new structure)
-      const { data: sectionsData, error: sectionsError } = await supabase
+      // Always use structured sections/subsections flow
+      const { data: sectionIdsData, error: sectionsError } = await supabase
         .from('sections')
         .select('id')
+        .eq('course_id', courseId);
+
+      if (sectionsError) throw sectionsError;
+      const sectionIds = sectionIdsData?.map(s => s.id) || [];
+
+      const { data: subsectionsData, error: subsectionsError } = await supabase
+        .from('subsections')
+        .select('id, section_id')
+        .in('section_id', sectionIds);
+
+      if (subsectionsError) throw subsectionsError;
+
+      // Fetch user progress for subsections
+      const { data: progressData, error: progressError } = await supabase
+        .from('user_progress')
+        .select('subsection_id, completed_at')
         .eq('course_id', courseId)
-        .limit(1);
+        .eq('user_id', user.id)
+        .not('completed_at', 'is', null);
 
-      if (sectionsError && sectionsError.code !== 'PGRST116') {
-        throw sectionsError;
+      if (progressError && progressError.code !== 'PGRST116') {
+        throw progressError;
       }
 
-      const hasStructure = sectionsData && sectionsData.length > 0;
-      setHasStructuredContent(hasStructure);
+      const completed = new Set(progressData?.map(p => p.subsection_id).filter(Boolean) || []);
+      setCompletedItems(completed);
 
-      if (hasStructure) {
-        // Fetch subsections to calculate total count
-        const { data: subsectionsData, error: subsectionsError } = await supabase
-          .from('subsections')
-          .select('id, section_id')
-          .in('section_id', await supabase
-            .from('sections')
-            .select('id')
-            .eq('course_id', courseId)
-            .then(res => res.data?.map(s => s.id) || [])
-          );
-
-        if (subsectionsError && subsectionsError.code !== 'PGRST116') {
-          throw subsectionsError;
-        }
-
-        // Fetch user progress for subsections
-        const { data: progressData, error: progressError } = await supabase
-          .from('user_progress')
-          .select('subsection_id, completed_at')
-          .eq('course_id', courseId)
-          .eq('user_id', user.id)
-          .not('completed_at', 'is', null);
-
-        if (progressError && progressError.code !== 'PGRST116') {
-          throw progressError;
-        }
-
-        const completed = new Set(progressData?.map(p => p.subsection_id).filter(Boolean) || []);
-        setCompletedItems(completed);
-
-        // Calculate progress for sections/subsections
-        const totalSubsections = subsectionsData?.length || 0;
-        const completedCount = completed.size;
-        const progress = totalSubsections > 0 ? Math.round((completedCount / totalSubsections) * 100) : 0;
-        setCourseProgress(progress);
-        setTotalItemsCount(totalSubsections);
-      } else {
-        // Fallback to old lessons structure
-        const { data: lessonsData, error: lessonsError } = await supabase
-          .from('lessons')
-          .select('*')
-          .eq('course_id', courseId)
-          .order('order_index', { ascending: true });
-
-        if (lessonsError) throw lessonsError;
-        setLessons(lessonsData || []);
-
-        // Fetch user progress for lessons
-        const { data: progressData, error: progressError } = await supabase
-          .from('user_progress')
-          .select('lesson_id, completed_at')
-          .eq('course_id', courseId)
-          .eq('user_id', user.id)
-          .not('completed_at', 'is', null);
-
-        if (progressError && progressError.code !== 'PGRST116') {
-          throw progressError;
-        }
-
-        const completed = new Set(progressData?.map(p => p.lesson_id).filter(Boolean) || []);
-        setCompletedItems(completed);
-
-        // Calculate progress percentage
-        const totalLessons = lessonsData?.length || 0;
-        const completedCount = completed.size;
-        const progress = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
-        setCourseProgress(progress);
-        setTotalItemsCount(totalLessons);
-      }
-
+      // Calculate progress for sections/subsections
+      const totalSubsections = subsectionsData?.length || 0;
+      const completedCount = completed.size;
+      const progress = totalSubsections > 0 ? Math.round((completedCount / totalSubsections) * 100) : 0;
+      setCourseProgress(progress);
+      setTotalItemsCount(totalSubsections);
     } catch (error) {
       console.error('Error fetching course data:', error);
       toast({
@@ -174,21 +122,7 @@ const CoursePage = () => {
     }
   };
 
-  const handleStartLesson = (lessonId: string) => {
-    navigate(`/course/${courseId}/lesson/${lessonId}`);
-  };
-
-  const getTotalDuration = () => {
-    return lessons.reduce((total, lesson) => total + (lesson.duration_minutes || 0), 0);
-  };
-
-  const isLessonAccessible = (lessonIndex: number) => {
-    if (lessonIndex === 0) return true; // First lesson is always accessible
-    
-    // Check if previous lesson is completed
-    const previousLesson = lessons[lessonIndex - 1];
-    return previousLesson ? completedItems.has(previousLesson.id) : false;
-  };
+// removed legacy lesson navigation helpers
 
   const getTotalItems = () => {
     return totalItemsCount;
@@ -248,7 +182,7 @@ const CoursePage = () => {
             variant="outline" 
             className="bg-gray-100 text-gray-700 border-gray-300 px-3 py-1 text-sm"
           >
-            {hasStructuredContent ? 'Structured Course' : `${lessons.length} Lessons`}
+            Structured Course
           </Badge>
         </div>
 
@@ -272,7 +206,7 @@ const CoursePage = () => {
           </div>
           <div className="flex items-center justify-between mb-3">
             <span className="text-gray-600 text-sm">
-              {getCompletedCount()} of {getTotalItems()} {hasStructuredContent ? 'items' : 'lessons'} completed
+              {getCompletedCount()} of {getTotalItems()} items completed
             </span>
             <span className="text-black font-bold text-lg">{courseProgress}%</span>
           </div>
@@ -353,124 +287,13 @@ const CoursePage = () => {
         )}
       </div>
 
-        {/* Course Overview Stats */}
-        {!hasStructuredContent && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card>
-              <CardContent className="flex items-center p-6">
-                <BookOpen className="h-8 w-8 text-primary mr-4" />
-                <div>
-                  <p className="text-2xl font-bold">{lessons.length}</p>
-                  <p className="text-sm text-muted-foreground">Total Lessons</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="flex items-center p-6">
-                <Clock className="h-8 w-8 text-info mr-4" />
-                <div>
-                  <p className="text-2xl font-bold">{getTotalDuration()}</p>
-                  <p className="text-sm text-muted-foreground">Minutes</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="flex items-center p-6">
-                <CheckCircle className="h-8 w-8 text-success mr-4" />
-                <div>
-                  <p className="text-2xl font-bold">{completedItems.size}</p>
-                  <p className="text-sm text-muted-foreground">Completed</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+// removed legacy course overview stats for lessons
 
         {/* Course Content */}
-        {hasStructuredContent ? (
-          <CourseStructure 
-            courseId={courseId!} 
-            onProgressUpdate={fetchCourseData}
-          />
-        ) : (
-          /* Lessons List - Fallback for old structure */
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5" />
-                Course Lessons
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {lessons.map((lesson, index) => {
-                const isCompleted = completedItems.has(lesson.id);
-                const isAccessible = isLessonAccessible(index);
-                
-                return (
-                  <div key={lesson.id}>
-                    <div className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${
-                      isAccessible 
-                        ? 'hover:bg-accent/50 cursor-pointer' 
-                        : 'opacity-60 cursor-not-allowed bg-muted/30'
-                    }`}>
-                      <div className="flex items-center gap-4 flex-1">
-                        <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
-                          isCompleted 
-                            ? 'bg-success text-success-foreground' 
-                            : isAccessible 
-                            ? 'bg-primary text-primary-foreground' 
-                            : 'bg-muted text-muted-foreground'
-                        }`}>
-                          {isCompleted ? (
-                            <CheckCircle className="h-4 w-4" />
-                          ) : (
-                            <span className="text-sm font-medium">{index + 1}</span>
-                          )}
-                        </div>
-                        
-                        <div className="flex-1">
-                          <h3 className={`font-medium ${!isAccessible ? 'text-muted-foreground' : ''}`}>
-                            {lesson.title}
-                          </h3>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              {lesson.duration_minutes} min
-                            </span>
-                            {isCompleted && (
-                              <Badge variant="outline" className="text-xs text-success border-success">
-                                Completed
-                              </Badge>
-                            )}
-                            {!isAccessible && !isCompleted && (
-                              <Badge variant="outline" className="text-xs text-muted-foreground">
-                                Locked
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <Button
-                        variant={isCompleted ? "outline" : "default"}
-                        size="sm"
-                        onClick={() => isAccessible && handleStartLesson(lesson.id)}
-                        disabled={!isAccessible}
-                      >
-                        {isCompleted ? "Review" : "Start"}
-                        <Play className="h-3 w-3 ml-1" />
-                      </Button>
-                    </div>
-                    
-                    {index < lessons.length - 1 && <Separator className="my-2" />}
-                  </div>
-                );
-              })}
-            </CardContent>
-          </Card>
-        )}
+        <CourseStructure 
+          courseId={courseId!} 
+          onProgressUpdate={fetchCourseData}
+        />
       </div>
   );
 };
