@@ -84,16 +84,23 @@ serve(async (req) => {
         let userId: string;
         let level: number;
 
-        // Extract user_id and level from client_reference_id or metadata
-        if (clientReferenceId && clientReferenceId.includes("-")) {
-          const [extractedUserId, extractedLevel] = clientReferenceId.split("-");
-          userId = extractedUserId;
-          level = parseInt(extractedLevel);
-        } else if (metadata?.user_id && metadata?.level) {
+        // Extract user_id and level from client_reference_id or metadata (prefer metadata)
+        const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+        if (metadata?.user_id && metadata?.level) {
           userId = metadata.user_id;
-          level = parseInt(metadata.level);
-        } else {
-          throw new Error("Cannot identify user_id and level from session data");
+          level = parseInt(String(metadata.level), 10);
+        } else if (clientReferenceId) {
+          // Expecting format: "<uuid>-<level>" where uuid itself contains hyphens
+          const lastDash = clientReferenceId.lastIndexOf("-");
+          if (lastDash > 0) {
+            userId = clientReferenceId.slice(0, lastDash);
+            level = parseInt(clientReferenceId.slice(lastDash + 1), 10);
+          }
+        }
+
+        if (!userId || !uuidRegex.test(userId) || !Number.isFinite(level)) {
+          logStep("Invalid session identification parsed", { clientReferenceId, metadata });
+          throw new Error("Cannot identify valid user_id (uuid) and level from session data");
         }
 
         logStep("Extracted session data", { userId, level, sessionId: session.id });
