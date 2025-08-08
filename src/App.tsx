@@ -28,6 +28,7 @@ import ContractSigningPage from "./pages/ContractSigningPage";
 import SubscriptionPaymentPage from "./pages/SubscriptionPaymentPage";
 import CertificationSuccessPage from "./pages/CertificationSuccessPage";
 import NotFound from "./pages/NotFound";
+import StyleGuide from "./pages/StyleGuide";
 
 const queryClient = new QueryClient();
 
@@ -152,6 +153,16 @@ const App = () => (
               } 
             />
             <Route path="/auth" element={<Layout showNavigation={false}><Auth /></Layout>} />
+            <Route 
+              path="/style-guide" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <StyleGuide />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<Layout><NotFound /></Layout>} />
           </Routes>
