@@ -387,7 +387,7 @@ const CourseDashboard = () => {
         </header>
 
         <section className="grid gap-6 md:grid-cols-2 items-center">
-          <img src="/placeholder.svg" alt="Start booking moves on MovingWaldo platform" className="rounded-xl border" loading="lazy" />
+          <img src="/lovable-uploads/f6e52a98-da86-4b5e-8692-2493d2b19184.png" alt="Illustration of booking moves on the MovingWaldo platform" className="rounded-xl border" loading="lazy" />
           <article className="space-y-3">
             <Badge variant="secondary">Level 1 Certified</Badge>
             <h2 className="text-xl font-semibold">Start booking moves and earning commissions</h2>
@@ -419,7 +419,7 @@ const CourseDashboard = () => {
                 Learn More
               </Button>
             </article>
-            <img src="/placeholder.svg" alt="Level 2 certification information" className="rounded-xl border md:order-last" loading="lazy" />
+            <img src="/lovable-uploads/3a670ee2-e426-42af-8552-52ae196d3a3f.png" alt="Graduation cap representing Level 2 certification" className="rounded-xl border md:order-last" loading="lazy" />
           </div>
         </section>
       </div>
