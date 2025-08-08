@@ -234,8 +234,39 @@ const CourseDashboard = () => {
   const courseProgress = currentCourse ? getCourseProgress(currentCourse) : { percentage: 0, completed: 0, total: 0 };
   const hasStarted = hasStartedAnyCourse();
 
+  const level1Workflow = certificationWorkflows[1];
+  const isLevel1Certified = !!(
+    level1Workflow && (
+      level1Workflow.current_step === 'completed' ||
+      level1Workflow.subscription_status === 'active' ||
+      level1Workflow.subscription_status === 'paid'
+    )
+  );
+  const level2Course = courses.find(c => c.level === 2);
+
+  useEffect(() => {
+    if (isLevel1Certified) {
+      document.title = 'Level 1 Certified - Dashboard';
+      const desc = 'Level 1 certified. Start booking moves on MovingWaldo and explore Level 2.';
+      let meta = document.querySelector('meta[name="description"]');
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', 'description');
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', desc);
+      let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement('link');
+        link.setAttribute('rel', 'canonical');
+        document.head.appendChild(link);
+      }
+      link.setAttribute('href', window.location.href);
+    }
+  }, [isLevel1Certified]);
+
   // For first-time users (no progress), show the new design
-  if (!hasStarted) {
+  if (!hasStarted && !isLevel1Certified) {
     return (
       <div className="max-w-[960px] mx-auto px-4 space-y-8">
         {/* Header Section */}
@@ -331,6 +362,57 @@ const CourseDashboard = () => {
             Start Level 1 Training
           </Button>
         </div>
+      </div>
+    );
+  }
+
+  // Show Level 1 completion dashboard if certified
+  if (isLevel1Certified) {
+    return (
+      <div className="max-w-[960px] mx-auto px-4 space-y-10">
+        <header className="space-y-2">
+          <h1 className="text-3xl font-bold">Congratulations{profile?.first_name ? `, ${profile.first_name}` : ''}!</h1>
+          <p className="text-muted-foreground">
+            You’ve successfully completed all requirements for Level 1 certification. You are now a certified MovingWaldo Relocation Specialist.
+          </p>
+        </header>
+
+        <section className="grid gap-6 md:grid-cols-2 items-center">
+          <img src="/placeholder.svg" alt="Start booking moves on MovingWaldo platform" className="rounded-xl border" loading="lazy" />
+          <article className="space-y-3">
+            <Badge variant="secondary">Level 1 Certified</Badge>
+            <h2 className="text-xl font-semibold">Start booking moves and earning commissions</h2>
+            <p className="text-muted-foreground">
+              Access the standalone platform to begin coordinating moves, managing your business, and maximizing your earning potential.
+            </p>
+            <Button
+              style={{ backgroundColor: '#fa372c' }}
+              className="text-white hover:opacity-90"
+              onClick={() => window.open('https://platform.movingwaldo.com', '_blank')}
+            >
+              Go to Platform
+            </Button>
+          </article>
+        </section>
+
+        <section className="space-y-4">
+          <h3 className="text-xl font-bold">Next Steps</h3>
+          <div className="grid gap-6 md:grid-cols-2 items-center">
+            <article className="space-y-2">
+              <h4 className="font-semibold">Upgrade to Level 2 Certification</h4>
+              <p className="text-muted-foreground">
+                Unlock advanced features, higher commission rates, and exclusive benefits by completing the Level 2 certification program.
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => level2Course ? navigate(`/course/${level2Course.id}`) : navigate('/courses')}
+              >
+                Learn More
+              </Button>
+            </article>
+            <img src="/placeholder.svg" alt="Level 2 certification information" className="rounded-xl border md:order-last" loading="lazy" />
+          </div>
+        </section>
       </div>
     );
   }
