@@ -42,6 +42,35 @@ const CourseDashboard = () => {
     fetchCertificationWorkflows();
   }, [user]);
 
+  // SEO: update when Level 1 is certified
+  useEffect(() => {
+    const wf = certificationWorkflows[1];
+    const certified = !!(
+      wf && (
+        wf.current_step === 'completed' ||
+        wf.subscription_status === 'active' ||
+        wf.subscription_status === 'paid'
+      )
+    );
+    if (certified) {
+      document.title = 'Level 1 Certified - Dashboard';
+      const desc = 'Level 1 certified. Start booking moves on MovingWaldo and explore Level 2.';
+      let meta = document.querySelector('meta[name="description"]');
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', 'description');
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', desc);
+      let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement('link');
+        link.setAttribute('rel', 'canonical');
+        document.head.appendChild(link);
+      }
+      link.setAttribute('href', window.location.href);
+    }
+  }, [certificationWorkflows]);
   const fetchCourses = async () => {
     try {
       const { data, error } = await supabase
@@ -244,26 +273,6 @@ const CourseDashboard = () => {
   );
   const level2Course = courses.find(c => c.level === 2);
 
-  useEffect(() => {
-    if (isLevel1Certified) {
-      document.title = 'Level 1 Certified - Dashboard';
-      const desc = 'Level 1 certified. Start booking moves on MovingWaldo and explore Level 2.';
-      let meta = document.querySelector('meta[name="description"]');
-      if (!meta) {
-        meta = document.createElement('meta');
-        meta.setAttribute('name', 'description');
-        document.head.appendChild(meta);
-      }
-      meta.setAttribute('content', desc);
-      let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-      if (!link) {
-        link = document.createElement('link');
-        link.setAttribute('rel', 'canonical');
-        document.head.appendChild(link);
-      }
-      link.setAttribute('href', window.location.href);
-    }
-  }, [isLevel1Certified]);
 
   // For first-time users (no progress), show the new design
   if (!hasStarted && !isLevel1Certified) {
