@@ -277,13 +277,13 @@ const CourseDashboard = () => {
   // For first-time users (no progress), show the new design
   if (!hasStarted && !isLevel1Certified) {
     return (
-      <div className="max-w-[960px] mx-auto px-4 space-y-8">
+      <div className="max-w-[960px] mx-auto px-4 space-y-8 animate-fade-in">
         {/* Header Section */}
         <div className="text-left space-y-4">
-          <h1 className="text-3xl font-bold text-black">
+          <h1 className="text-3xl font-bold">
             MovingWaldo Certification Program
           </h1>
-          <p className="text-black">
+          <p className="text-muted-foreground">
             Welcome to the MovingWaldo RS Certification Program! This program is designed to equip you with the knowledge and skills needed to become a certified advisor, helping clients coordinate their moves with confidence and expertise.
           </p>
         </div>
@@ -299,7 +299,7 @@ const CourseDashboard = () => {
 
         {/* Certification Process */}
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-black">Level 1 Certification Process</h2>
+          <h2 className="text-xl font-bold">Level 1 Certification Process</h2>
           
           <div className="space-y-4">
             {/* Training */}
@@ -308,11 +308,11 @@ const CourseDashboard = () => {
               onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <GraduationCap className="w-6 h-6 text-black" />
+                <GraduationCap className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Training</h3>
-                <p className="text-[#242526]">Complete the Level 1 training modules</p>
+                <h3 className="text-base font-semibold">Training</h3>
+                <p className="text-muted-foreground">Complete the Level 1 training modules</p>
               </div>
             </div>
 
@@ -322,11 +322,11 @@ const CourseDashboard = () => {
               onClick={() => navigate('/certification/1/exam')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <ClipboardCheck className="w-6 h-6 text-black" />
+                <ClipboardCheck className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Exam</h3>
-                <p className="text-[#242526]">Pass the Level 1 exam to proceed.</p>
+                <h3 className="text-base font-semibold">Exam</h3>
+                <p className="text-muted-foreground">Pass the Level 1 exam to proceed.</p>
               </div>
             </div>
 
@@ -336,11 +336,11 @@ const CourseDashboard = () => {
               onClick={() => navigate('/certification/1/contract')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileSignature className="w-6 h-6 text-black" />
+                <FileSignature className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Contract</h3>
-                <p className="text-[#242526]">Review and sign the advisor agreement.</p>
+                <h3 className="text-base font-semibold">Contract</h3>
+                <p className="text-muted-foreground">Review and sign the advisor agreement.</p>
               </div>
             </div>
 
@@ -350,11 +350,11 @@ const CourseDashboard = () => {
               onClick={() => navigate('/certification/1/payment')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <CreditCard className="w-6 h-6 text-black" />
+                <CreditCard className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Subscription</h3>
-                <p className="text-[#242526]">Choose a subscription plan to activate your certification.</p>
+                <h3 className="text-base font-semibold">Subscription</h3>
+                <p className="text-muted-foreground">Choose a subscription plan to activate your certification.</p>
               </div>
             </div>
           </div>
@@ -363,8 +363,7 @@ const CourseDashboard = () => {
         {/* Start Training Button */}
         <div className="flex">
           <Button 
-            style={{ backgroundColor: '#fa372c' }}
-            className="text-white hover:opacity-90 px-6 py-2 text-base font-medium"
+            className="px-6 py-2 text-base font-medium hover-scale"
             onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
           >
             <BookOpen className="h-4 w-4 mr-2" />
@@ -378,7 +377,7 @@ const CourseDashboard = () => {
   // Show Level 1 completion dashboard if certified
   if (isLevel1Certified) {
     return (
-      <div className="max-w-[960px] mx-auto px-4 space-y-10">
+      <div className="max-w-[960px] mx-auto px-4 space-y-10 animate-fade-in">
         <header className="space-y-2">
           <h1 className="text-3xl font-bold">Congratulations{profile?.first_name ? `, ${profile.first_name}` : ''}!</h1>
           <p className="text-muted-foreground">
@@ -395,8 +394,7 @@ const CourseDashboard = () => {
               Access the standalone platform to begin coordinating moves, managing your business, and maximizing your earning potential.
             </p>
             <Button
-              style={{ backgroundColor: '#fa372c' }}
-              className="text-white hover:opacity-90"
+              className="hover-scale"
               onClick={() => window.open('https://platform.movingwaldo.com', '_blank')}
             >
               Go to Platform
@@ -439,30 +437,29 @@ const CourseDashboard = () => {
   // Dashboard for contract signed, ready for subscription
   if (isContractSigned) {
     return (
-      <div className="max-w-[960px] mx-auto px-4 space-y-8">
+      <div className="max-w-[960px] mx-auto px-4 space-y-8 animate-fade-in">
         {/* Header Section */}
         <div className="text-left space-y-4">
-          <h1 className="text-3xl font-bold text-black">
+          <h1 className="text-3xl font-bold">
             MovingWaldo Certification Program
           </h1>
         </div>
 
         {/* Subscription Subtitle */}
         <div>
-          <h2 className="text-xl font-bold text-black">Activate Your Subscription</h2>
+          <h2 className="text-xl font-bold">Activate Your Subscription</h2>
         </div>
 
         {/* Subscription Description */}
         <div className="space-y-4">
-          <p className="text-black">
+          <p className="text-muted-foreground">
             Excellent! You've completed all the training requirements and signed your contract. The final step is to activate your monthly subscription plan to gain access to the live platform and receive your official certification. Choose your plan below to get started.
           </p>
           
           {/* Activate Subscription Button */}
           <div className="flex">
             <Button 
-              style={{ backgroundColor: '#fa372c' }}
-              className="text-white hover:opacity-90 px-6 py-2 text-base font-medium"
+              className="px-6 py-2 text-base font-medium hover-scale"
               onClick={() => navigate('/certification/1/payment')}
             >
               <CreditCard className="h-4 w-4 mr-2" />
@@ -473,7 +470,7 @@ const CourseDashboard = () => {
 
         {/* Next Steps Section */}
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-black">Next Steps</h2>
+          <h2 className="text-xl font-bold">Next Steps</h2>
           
           <div className="space-y-4">
             {/* Subscription */}
@@ -482,11 +479,11 @@ const CourseDashboard = () => {
               onClick={() => navigate('/certification/1/payment')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <CreditCard className="w-6 h-6 text-black" />
+                <CreditCard className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Subscription</h3>
-                <p className="text-[#242526]">Choose a subscription plan to activate your certification.</p>
+                <h3 className="text-base font-semibold">Subscription</h3>
+                <p className="text-muted-foreground">Choose a subscription plan to activate your certification.</p>
               </div>
             </div>
           </div>
@@ -494,7 +491,7 @@ const CourseDashboard = () => {
 
         {/* Completed Section */}
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-black">Completed</h2>
+          <h2 className="text-xl font-bold">Completed</h2>
           
           <div className="space-y-4">
             {/* Training Completed */}
@@ -503,11 +500,11 @@ const CourseDashboard = () => {
               onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <GraduationCap className="w-6 h-6 text-black" />
+                <GraduationCap className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Training</h3>
-                <p className="text-[#242526]">Complete the Level 1 training modules</p>
+                <h3 className="text-base font-semibold">Training</h3>
+                <p className="text-muted-foreground">Complete the Level 1 training modules</p>
               </div>
             </div>
 
@@ -517,11 +514,11 @@ const CourseDashboard = () => {
               onClick={() => navigate('/certification/1/exam')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <ClipboardCheck className="w-6 h-6 text-black" />
+                <ClipboardCheck className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Certification Exam</h3>
-                <p className="text-[#242526]">Pass the Level 1 exam to proceed.</p>
+                <h3 className="text-base font-semibold">Certification Exam</h3>
+                <p className="text-muted-foreground">Pass the Level 1 exam to proceed.</p>
               </div>
             </div>
 
@@ -531,11 +528,11 @@ const CourseDashboard = () => {
               onClick={() => navigate('/certification/1/contract')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileSignature className="w-6 h-6 text-black" />
+                <FileSignature className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Contract</h3>
-                <p className="text-[#242526]">Review and sign the advisor agreement.</p>
+                <h3 className="text-base font-semibold">Contract</h3>
+                <p className="text-muted-foreground">Review and sign the advisor agreement.</p>
               </div>
             </div>
           </div>
@@ -547,30 +544,29 @@ const CourseDashboard = () => {
   // Dashboard for exam completed, ready for contract
   if (isExamApproved) {
     return (
-      <div className="max-w-[960px] mx-auto px-4 space-y-8">
+      <div className="max-w-[960px] mx-auto px-4 space-y-8 animate-fade-in">
         {/* Header Section */}
         <div className="text-left space-y-4">
-          <h1 className="text-3xl font-bold text-black">
+          <h1 className="text-3xl font-bold">
             MovingWaldo Certification Program
           </h1>
         </div>
 
         {/* Contract Subtitle */}
         <div>
-          <h2 className="text-xl font-bold text-black">Certified Relocation Specialist Contract</h2>
+          <h2 className="text-xl font-bold">Certified Relocation Specialist Contract</h2>
         </div>
 
         {/* Contract Description */}
         <div className="space-y-4">
-          <p className="text-black">
+          <p className="text-muted-foreground">
             Congratulations! You passed the Level 1 Exam! You are now trained and ready to book well planned moves for your clients. To gain access to the live platform and get your certificate, all you need to do now is sign your contract with MovingWaldo and activate your monthly subscription plan.
           </p>
           
           {/* Sign Contract Button */}
           <div className="flex">
             <Button 
-              style={{ backgroundColor: '#fa372c' }}
-              className="text-white hover:opacity-90 px-6 py-2 text-base font-medium"
+              className="px-6 py-2 text-base font-medium hover-scale"
               onClick={() => navigate('/certification/1/contract')}
             >
               Sign my Contract
@@ -580,7 +576,7 @@ const CourseDashboard = () => {
 
         {/* Next Steps Section */}
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-black">Next Steps</h2>
+          <h2 className="text-xl font-bold">Next Steps</h2>
           
           <div className="space-y-4">
             {/* Contract */}
@@ -589,11 +585,11 @@ const CourseDashboard = () => {
               onClick={() => navigate('/certification/1/contract')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileSignature className="w-6 h-6 text-black" />
+                <FileSignature className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Contract</h3>
-                <p className="text-[#242526]">Review and sign the advisor agreement.</p>
+                <h3 className="text-base font-semibold">Contract</h3>
+                <p className="text-muted-foreground">Review and sign the advisor agreement.</p>
               </div>
             </div>
 
@@ -603,11 +599,11 @@ const CourseDashboard = () => {
               onClick={() => navigate('/certification/1/payment')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <CreditCard className="w-6 h-6 text-black" />
+                <CreditCard className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Subscription</h3>
-                <p className="text-[#242526]">Choose a subscription plan to activate your certification.</p>
+                <h3 className="text-base font-semibold">Subscription</h3>
+                <p className="text-muted-foreground">Choose a subscription plan to activate your certification.</p>
               </div>
             </div>
           </div>
@@ -615,7 +611,7 @@ const CourseDashboard = () => {
 
         {/* Completed Section */}
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-black">Completed</h2>
+          <h2 className="text-xl font-bold">Completed</h2>
           
           <div className="space-y-4">
             {/* Training Completed */}
@@ -624,11 +620,11 @@ const CourseDashboard = () => {
               onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <GraduationCap className="w-6 h-6 text-black" />
+                <GraduationCap className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Training</h3>
-                <p className="text-[#242526]">Complete the Level 1 training modules</p>
+                <h3 className="text-base font-semibold">Training</h3>
+                <p className="text-muted-foreground">Complete the Level 1 training modules</p>
               </div>
             </div>
 
@@ -638,11 +634,11 @@ const CourseDashboard = () => {
               onClick={() => navigate('/certification/1/exam')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <ClipboardCheck className="w-6 h-6 text-black" />
+                <ClipboardCheck className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Certification Exam</h3>
-                <p className="text-[#242526]">Pass the Level 1 exam to proceed.</p>
+                <h3 className="text-base font-semibold">Certification Exam</h3>
+                <p className="text-muted-foreground">Pass the Level 1 exam to proceed.</p>
               </div>
             </div>
           </div>
@@ -654,30 +650,29 @@ const CourseDashboard = () => {
   // Dashboard for training completed, ready for exam
   if (isTrainingCompleted) {
     return (
-      <div className="max-w-[960px] mx-auto px-4 space-y-8">
+      <div className="max-w-[960px] mx-auto px-4 space-y-8 animate-fade-in">
         {/* Header Section */}
         <div className="text-left space-y-4">
-          <h1 className="text-3xl font-bold text-black">
+          <h1 className="text-3xl font-bold">
             MovingWaldo Certification Program
           </h1>
         </div>
 
         {/* Certification Exam Subtitle */}
         <div>
-          <h2 className="text-xl font-bold text-black">Certification Exam Level 1</h2>
+          <h2 className="text-xl font-bold">Certification Exam Level 1</h2>
         </div>
 
         {/* Exam Description */}
         <div className="space-y-4">
-          <p className="text-black">
+          <p className="text-muted-foreground">
             Congratulations on completing the training modules! You're now ready to take the Level 1 Exam. This exam assesses your understanding of the material covered in the training and is a crucial step towards becoming a certified MovingWaldo advisor. You have 3 attempts remaining to pass the exam.
           </p>
           
           {/* Start Certification Exam Button */}
           <div className="flex">
             <Button 
-              style={{ backgroundColor: '#fa372c' }}
-              className="text-white hover:opacity-90 px-6 py-2 text-base font-medium"
+              className="px-6 py-2 text-base font-medium hover-scale"
               onClick={() => navigate('/certification/1/exam')}
             >
               <GraduationCap className="h-4 w-4 mr-2" />
@@ -688,7 +683,7 @@ const CourseDashboard = () => {
 
         {/* Next Steps Section */}
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-black">Next Steps</h2>
+          <h2 className="text-xl font-bold">Next Steps</h2>
           
           <div className="space-y-4">
             {/* Certification Exam */}
@@ -697,11 +692,11 @@ const CourseDashboard = () => {
               onClick={() => navigate('/certification/1/exam')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <ClipboardCheck className="w-6 h-6 text-black" />
+                <ClipboardCheck className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Certification Exam</h3>
-                <p className="text-[#242526]">Pass the Level 1 exam to proceed.</p>
+                <h3 className="text-base font-semibold">Certification Exam</h3>
+                <p className="text-muted-foreground">Pass the Level 1 exam to proceed.</p>
               </div>
             </div>
 
@@ -711,11 +706,11 @@ const CourseDashboard = () => {
               onClick={() => navigate('/certification/1/contract')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileSignature className="w-6 h-6 text-black" />
+                <FileSignature className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Contract</h3>
-                <p className="text-[#242526]">Review and sign the advisor agreement.</p>
+                <h3 className="text-base font-semibold">Contract</h3>
+                <p className="text-muted-foreground">Review and sign the advisor agreement.</p>
               </div>
             </div>
 
@@ -725,11 +720,11 @@ const CourseDashboard = () => {
               onClick={() => navigate('/certification/1/payment')}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <CreditCard className="w-6 h-6 text-black" />
+                <CreditCard className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Subscription</h3>
-                <p className="text-[#242526]">Choose a subscription plan to activate your certification.</p>
+                <h3 className="text-base font-semibold">Subscription</h3>
+                <p className="text-muted-foreground">Choose a subscription plan to activate your certification.</p>
               </div>
             </div>
           </div>
@@ -737,7 +732,7 @@ const CourseDashboard = () => {
 
         {/* Completed Section */}
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-black">Completed</h2>
+          <h2 className="text-xl font-bold">Completed</h2>
           
           <div className="space-y-4">
             {/* Training Completed */}
@@ -746,11 +741,11 @@ const CourseDashboard = () => {
               onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
             >
               <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-                <GraduationCap className="w-6 h-6 text-black" />
+                <GraduationCap className="w-6 h-6 text-foreground" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-black">Training</h3>
-                <p className="text-[#242526]">Complete the Level 1 training modules</p>
+                <h3 className="text-base font-semibold">Training</h3>
+                <p className="text-muted-foreground">Complete the Level 1 training modules</p>
               </div>
             </div>
           </div>
@@ -761,17 +756,17 @@ const CourseDashboard = () => {
 
   // Dashboard for users with progress (training started but not completed)
   return (
-    <div className="max-w-[960px] mx-auto px-4 space-y-8">
+    <div className="max-w-[960px] mx-auto px-4 space-y-8 animate-fade-in">
       {/* Header Section */}
       <div className="text-left space-y-4">
-        <h1 className="text-3xl font-bold text-black">
+        <h1 className="text-3xl font-bold">
           MovingWaldo Certification Program
         </h1>
       </div>
 
       {/* Training Level Subtitle */}
       <div>
-        <h2 className="text-xl font-bold text-black">Training Level 1</h2>
+        <h2 className="text-xl font-bold">Training Level 1</h2>
       </div>
 
       {/* Progress Section */}
@@ -779,20 +774,19 @@ const CourseDashboard = () => {
         <div className="space-y-4">
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-black">Training Progress</span>
-              <span className="text-black font-semibold">{courseProgress.percentage}%</span>
+              <span className="text-foreground">Training Progress</span>
+              <span className="text-foreground font-semibold">{courseProgress.percentage}%</span>
             </div>
             <Progress value={courseProgress.percentage} className="h-2" />
-            <span className="text-sm text-[#242526]">
-              {courseProgress.completed}/{courseProgress.total} subsections completed
-            </span>
+              <span className="text-sm text-muted-foreground">
+                {courseProgress.completed}/{courseProgress.total} subsections completed
+              </span>
           </div>
           
           {/* Continue Training Button */}
           <div className="flex">
             <Button 
-              style={{ backgroundColor: '#fa372c' }}
-              className="text-white hover:opacity-90 px-6 py-2 text-base font-medium"
+              className="px-6 py-2 text-base font-medium hover-scale"
               onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
             >
               <ArrowRight className="h-4 w-4 mr-2" />
@@ -804,7 +798,7 @@ const CourseDashboard = () => {
 
       {/* Next Steps Section */}
       <div className="space-y-6">
-        <h2 className="text-xl font-bold text-black">Next Steps</h2>
+        <h2 className="text-xl font-bold">Next Steps</h2>
         
         <div className="space-y-4">
           {/* Certification Exam */}
@@ -813,11 +807,11 @@ const CourseDashboard = () => {
             onClick={() => navigate('/certification/1/exam')}
           >
             <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-              <ClipboardCheck className="w-6 h-6 text-black" />
+              <ClipboardCheck className="w-6 h-6 text-foreground" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-black">Certification Exam</h3>
-              <p className="text-[#242526]">Pass the Level 1 exam to proceed.</p>
+              <h3 className="text-base font-semibold">Certification Exam</h3>
+              <p className="text-muted-foreground">Pass the Level 1 exam to proceed.</p>
             </div>
           </div>
 
@@ -827,11 +821,11 @@ const CourseDashboard = () => {
             onClick={() => navigate('/certification/1/contract')}
           >
             <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-              <FileSignature className="w-6 h-6 text-black" />
+              <FileSignature className="w-6 h-6 text-foreground" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-black">Contract</h3>
-              <p className="text-[#242526]">Review and sign the advisor agreement.</p>
+              <h3 className="text-base font-semibold">Contract</h3>
+              <p className="text-muted-foreground">Review and sign the advisor agreement.</p>
             </div>
           </div>
 
@@ -841,11 +835,11 @@ const CourseDashboard = () => {
             onClick={() => navigate('/certification/1/payment')}
           >
             <div className="w-12 h-12 bg-[#C6D1E5] rounded-lg flex items-center justify-center flex-shrink-0">
-              <CreditCard className="w-6 h-6 text-black" />
+              <CreditCard className="w-6 h-6 text-foreground" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-black">Subscription</h3>
-              <p className="text-[#242526]">Choose a subscription plan to activate your certification.</p>
+              <h3 className="text-base font-semibold">Subscription</h3>
+              <p className="text-muted-foreground">Choose a subscription plan to activate your certification.</p>
             </div>
           </div>
         </div>
