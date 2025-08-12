@@ -287,7 +287,7 @@ const CoursePage = () => {
         )}
       </div>
 
-// removed legacy course overview stats for lessons
+{/* removed legacy course overview stats for lessons */}
 
         {/* Course Content */}
         <CourseStructure 
