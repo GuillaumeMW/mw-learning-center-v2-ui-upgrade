@@ -363,7 +363,7 @@ const CourseDashboard = () => {
         {/* Start Training Button */}
         <div className="flex">
           <Button 
-            className="px-6 py-2 text-base font-medium hover-scale"
+            className="hover-scale"
             onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
           >
             <BookOpen className="h-4 w-4 mr-2" />
@@ -459,7 +459,7 @@ const CourseDashboard = () => {
           {/* Activate Subscription Button */}
           <div className="flex">
             <Button 
-              className="px-6 py-2 text-base font-medium hover-scale"
+              className="hover-scale"
               onClick={() => navigate('/certification/1/payment')}
             >
               <CreditCard className="h-4 w-4 mr-2" />
@@ -566,7 +566,7 @@ const CourseDashboard = () => {
           {/* Sign Contract Button */}
           <div className="flex">
             <Button 
-              className="px-6 py-2 text-base font-medium hover-scale"
+              className="hover-scale"
               onClick={() => navigate('/certification/1/contract')}
             >
               Sign my Contract
@@ -671,13 +671,13 @@ const CourseDashboard = () => {
           
           {/* Start Certification Exam Button */}
           <div className="flex">
-            <Button 
-              className="px-6 py-2 text-base font-medium hover-scale"
-              onClick={() => navigate('/certification/1/exam')}
-            >
-              <GraduationCap className="h-4 w-4 mr-2" />
-              Start Certification Exam
-            </Button>
+          <Button 
+            className="hover-scale"
+            onClick={() => navigate('/certification/1/exam')}
+          >
+            <GraduationCap className="h-4 w-4 mr-2" />
+            Start Certification Exam
+          </Button>
           </div>
         </div>
 
@@ -786,7 +786,7 @@ const CourseDashboard = () => {
           {/* Continue Training Button */}
           <div className="flex">
             <Button 
-              className="px-6 py-2 text-base font-medium hover-scale"
+              className="hover-scale"
               onClick={() => currentCourse && navigate(`/course/${currentCourse.id}`)}
             >
               <ArrowRight className="h-4 w-4 mr-2" />
