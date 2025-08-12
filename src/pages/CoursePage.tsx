@@ -164,7 +164,7 @@ const CoursePage = () => {
         <Button 
           variant="ghost" 
           onClick={() => navigate('/')}
-          className="mb-6 text-gray-600 hover:text-gray-800 p-0 h-auto"
+          className="mb-6 text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Dashboard
