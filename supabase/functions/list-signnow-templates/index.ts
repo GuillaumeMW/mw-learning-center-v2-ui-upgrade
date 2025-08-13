@@ -94,17 +94,37 @@ serve(async (req) => {
       )
     );
 
-    // Map to concise list
+    // Show ALL documents for debugging
+    const allDocuments = items.map((t) => ({
+      id: t.id || t.document_id || t.uid || t.uuid,
+      name: t.name || t.document_name || t.title || t.original_filename,
+      updated: t.updated || t.updated_at || t.modified,
+      isTemplate: Boolean(
+        t?.is_template === true ||
+          t?.template === true ||
+          t?.type === "template" ||
+          t?.document_type === "template"
+      ),
+      rawData: t // Include raw data for debugging
+    }));
+
+    // Map to concise list (templates only)
     const list = templates.map((t) => ({
       id: t.id || t.document_id || t.uid || t.uuid,
       name: t.name || t.document_name || t.title || t.original_filename,
       updated: t.updated || t.updated_at || t.modified,
     }));
 
-    log("Templates fetched", { count: list.length });
+    log("Templates fetched", { count: list.length, totalDocuments: allDocuments.length });
 
     return new Response(
-      JSON.stringify({ success: true, count: list.length, templates: list }),
+      JSON.stringify({ 
+        success: true, 
+        count: list.length, 
+        templates: list,
+        totalDocuments: allDocuments.length,
+        allDocuments: allDocuments // Include all documents for debugging
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );
   } catch (e) {

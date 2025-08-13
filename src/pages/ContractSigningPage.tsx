@@ -106,13 +106,16 @@ const ContractSigningPage = () => {
     try {
       const { data, error } = await supabase.functions.invoke('list-signnow-templates');
       if (error) throw error;
-      console.log('SignNow templates:', data);
-      const items = (data?.templates ?? []) as { id: string; name?: string; updated?: string }[];
-      setTemplates(items);
-      toast({
-        title: 'Templates fetched',
-        description: `${items.length} template(s) found. See the list below.`,
-      });
+        console.log('SignNow response:', data);
+        const templates = (data?.templates ?? []) as { id: string; name?: string; updated?: string }[];
+        const allDocs = (data?.allDocuments ?? []) as { id: string; name?: string; updated?: string; isTemplate?: boolean }[];
+        
+        // Show all documents instead of just templates for debugging
+        setTemplates(allDocs);
+        toast({
+          title: 'SignNow Documents',
+          description: `Found ${data?.totalDocuments || 0} total documents, ${templates.length} marked as templates. Check the list below.`,
+        });
     } catch (err) {
       console.error('Error fetching templates:', err);
       toast({ title: 'Error', description: 'Failed to fetch templates from SignNow', variant: 'destructive' });
