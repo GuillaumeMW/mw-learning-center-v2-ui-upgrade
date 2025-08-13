@@ -25,6 +25,8 @@ const ContractSigningPage = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [workflow, setWorkflow] = useState<CertificationWorkflow | null>(null);
+  const [templates, setTemplates] = useState<{ id: string; name?: string; updated?: string }[] | null>(null);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
 
   useEffect(() => {
     if (user && level) {
@@ -95,6 +97,27 @@ const ContractSigningPage = () => {
       });
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleListTemplates = async () => {
+    if (!user) return;
+    setLoadingTemplates(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('list-signnow-templates');
+      if (error) throw error;
+      console.log('SignNow templates:', data);
+      const items = (data?.templates ?? []) as { id: string; name?: string; updated?: string }[];
+      setTemplates(items);
+      toast({
+        title: 'Templates fetched',
+        description: `${items.length} template(s) found. See the list below.`,
+      });
+    } catch (err) {
+      console.error('Error fetching templates:', err);
+      toast({ title: 'Error', description: 'Failed to fetch templates from SignNow', variant: 'destructive' });
+    } finally {
+      setLoadingTemplates(false);
     }
   };
 
@@ -340,6 +363,59 @@ const ContractSigningPage = () => {
             </CardContent>
           </Card>
         )}
+        {/* SignNow Templates Helper */}
+        <Card>
+          <CardHeader>
+            <CardTitle>SignNow Templates</CardTitle>
+            <CardDescription>Fetch your templates and copy their IDs</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-3 mb-4">
+              <Button onClick={handleListTemplates} disabled={loadingTemplates}>
+                {loadingTemplates ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Fetching Templates...
+                  </>
+                ) : (
+                  <>List SignNow Templates</>
+                )}
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Looking for: "MovingWaldo Certified Relocation Specialist Agreement - Level 1"
+              </span>
+            </div>
+
+            {templates && templates.length > 0 && (
+              <div className="space-y-2">
+                {templates.map((t) => (
+                  <div key={t.id} className="flex items-center justify-between p-3 rounded-md border">
+                    <div className="min-w-0">
+                      <div className="font-medium truncate">
+                        {t.name || 'Untitled template'}
+                      </div>
+                      <div className="text-xs text-muted-foreground truncate">
+                        ID: {t.id}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">{t.updated ? `Updated: ${new Date(t.updated).toLocaleString()}` : 'Template'}</Badge>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          navigator.clipboard.writeText(t.id);
+                          toast({ title: 'Copied', description: 'Template ID copied to clipboard' });
+                        }}
+                      >
+                        Copy ID
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
