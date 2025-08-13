@@ -14,6 +14,7 @@ interface CertificationWorkflow {
   admin_approval_status: string;
   contract_status: string;
   contract_doc_url?: string;
+  contract_document_id?: string;
 }
 
 const ContractSigningPage = () => {
@@ -75,7 +76,9 @@ const ContractSigningPage = () => {
         
         toast({
           title: 'Contract Signing Started',
-          description: 'Please complete the contract signing process in the new window.',
+          description: data.document_id 
+            ? `Document ID: ${data.document_id}. Please complete the contract signing process in the new window.`
+            : 'Please complete the contract signing process in the new window.',
         });
         
         // Refresh workflow data after a short delay

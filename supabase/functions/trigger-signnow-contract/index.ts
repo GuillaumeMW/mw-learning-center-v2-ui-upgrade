@@ -96,6 +96,7 @@ serve(async (req) => {
       .update({
         contract_status: "pending_signing",
         current_step: "contract",
+        contract_document_id: signNowData.document_id,
         updated_at: new Date().toISOString()
       })
       .eq("user_id", user_id)
@@ -111,6 +112,8 @@ serve(async (req) => {
     return new Response(JSON.stringify({ 
       success: true, 
       signing_url: signingUrl,
+      document_id: signNowData.document_id,
+      contract_document_id: signNowData.document_id,
       message: "Contract signing link generated successfully" 
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

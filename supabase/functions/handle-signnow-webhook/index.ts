@@ -97,6 +97,7 @@ serve(async (req) => {
     let updateData: any = {
       contract_status: contractStatus,
       current_step: currentStep,
+      contract_document_id: document_id,
       updated_at: new Date().toISOString()
     };
 
@@ -118,7 +119,8 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({ 
       acknowledged: true, 
-      message: "SignNow webhook processed successfully" 
+      message: "SignNow webhook processed successfully",
+      document_id
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
