@@ -37,55 +37,84 @@ serve(async (req) => {
     const signNowToken = Deno.env.get("SIGNNOW_API_KEY");
     if (!signNowToken) throw new Error("SIGNNOW_API_KEY is not configured in Supabase secrets");
 
-    // Try to fetch templates from SignNow API
+    // Try to fetch all documents from SignNow API with pagination
     const endpoints = [
       "https://api.signnow.com/user/documents",
       "https://api-eval.signnow.com/user/documents",
     ];
 
-    let raw: any = null;
+    let allDocuments: any[] = [];
     let ok = false;
     let lastStatus = 0;
 
-    for (const ep of endpoints) {
+    for (const baseEndpoint of endpoints) {
       try {
-        const res = await fetch(ep, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${signNowToken}`,
-            Accept: "application/json",
-          },
-        });
-        lastStatus = res.status;
-        raw = await res.json().catch(() => ({}));
-        if (res.ok) {
+        let offset = 0;
+        const limit = 100; // Max per page
+        let hasMore = true;
+        let pageDocuments: any[] = [];
+
+        while (hasMore) {
+          const endpoint = `${baseEndpoint}?limit=${limit}&offset=${offset}`;
+          log("Fetching from endpoint", { endpoint, offset, limit });
+
+          const res = await fetch(endpoint, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${signNowToken}`,
+              Accept: "application/json",
+            },
+          });
+          
+          lastStatus = res.status;
+          const raw = await res.json().catch(() => ({}));
+          
+          if (!res.ok) {
+            log("Endpoint failed", { endpoint, status: res.status, raw });
+            break;
+          }
+
+          // Extract documents from response
+          const items: any[] = Array.isArray(raw)
+            ? raw
+            : Array.isArray((raw as any).data)
+            ? (raw as any).data
+            : Array.isArray((raw as any).documents)
+            ? (raw as any).documents
+            : [];
+
+          pageDocuments = pageDocuments.concat(items);
+          
+          // Check if we have more pages
+          hasMore = items.length === limit;
+          offset += limit;
+          
+          log("Fetched page", { pageSize: items.length, totalSoFar: pageDocuments.length, hasMore });
+          
+          // Safety break after 50 pages (5000 documents)
+          if (offset >= 5000) {
+            log("Safety break - too many documents");
+            break;
+          }
+        }
+
+        if (pageDocuments.length > 0) {
+          allDocuments = pageDocuments;
           ok = true;
-          log("Fetched from endpoint", { ep });
+          log("Successfully fetched all documents", { endpoint: baseEndpoint, total: allDocuments.length });
           break;
-        } else {
-          log("Endpoint failed", { ep, status: res.status, raw });
         }
       } catch (err) {
-        log("Endpoint error", { ep, err: String(err) });
+        log("Endpoint error", { endpoint: baseEndpoint, err: String(err) });
       }
     }
 
     if (!ok) {
-      throw new Error(`SignNow API error (${lastStatus}) - ${JSON.stringify(raw)}`);
+      throw new Error(`SignNow API error (${lastStatus})`);
     }
 
-    // Normalize potential shapes
-    // Some responses return { data: Document[] } or { documents: Document[] } or an array directly
-    const items: any[] = Array.isArray(raw)
-      ? raw
-      : Array.isArray((raw as any).data)
-      ? (raw as any).data
-      : Array.isArray((raw as any).documents)
-      ? (raw as any).documents
-      : [];
-
     // Filter templates by known flags/fields
-    const templates = items.filter((it) =>
+    const templates = allDocuments.filter((it) =>
       Boolean(
         it?.is_template === true ||
           it?.template === true ||
@@ -95,7 +124,7 @@ serve(async (req) => {
     );
 
     // Show ALL documents for debugging
-    const allDocuments = items.map((t) => ({
+    const allDocsFormatted = allDocuments.map((t) => ({
       id: t.id || t.document_id || t.uid || t.uuid,
       name: t.name || t.document_name || t.title || t.original_filename,
       updated: t.updated || t.updated_at || t.modified,
@@ -105,7 +134,6 @@ serve(async (req) => {
           t?.type === "template" ||
           t?.document_type === "template"
       ),
-      rawData: t // Include raw data for debugging
     }));
 
     // Map to concise list (templates only)
@@ -123,7 +151,7 @@ serve(async (req) => {
         count: list.length, 
         templates: list,
         totalDocuments: allDocuments.length,
-        allDocuments: allDocuments // Include all documents for debugging
+        allDocuments: allDocsFormatted // Include all documents for debugging
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );
