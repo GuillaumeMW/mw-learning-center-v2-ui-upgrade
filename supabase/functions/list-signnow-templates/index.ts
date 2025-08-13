@@ -37,7 +37,7 @@ serve(async (req) => {
     const signNowToken = Deno.env.get("SIGNNOW_API_KEY");
     if (!signNowToken) throw new Error("SIGNNOW_API_KEY is not configured in Supabase secrets");
 
-    // Try to fetch all documents from SignNow API with pagination
+    // Try to fetch documents from SignNow API - start with first page
     const endpoints = [
       "https://api.signnow.com/user/documents",
       "https://api-eval.signnow.com/user/documents",
@@ -49,59 +49,53 @@ serve(async (req) => {
 
     for (const baseEndpoint of endpoints) {
       try {
-        let offset = 0;
-        const limit = 100; // Max per page
-        let hasMore = true;
-        let pageDocuments: any[] = [];
-
-        while (hasMore) {
-          const endpoint = `${baseEndpoint}?limit=${limit}&offset=${offset}`;
-          log("Fetching from endpoint", { endpoint, offset, limit });
-
-          const res = await fetch(endpoint, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${signNowToken}`,
-              Accept: "application/json",
-            },
-          });
-          
-          lastStatus = res.status;
-          const raw = await res.json().catch(() => ({}));
-          
-          if (!res.ok) {
-            log("Endpoint failed", { endpoint, status: res.status, raw });
-            break;
-          }
-
-          // Extract documents from response
-          const items: any[] = Array.isArray(raw)
-            ? raw
-            : Array.isArray((raw as any).data)
-            ? (raw as any).data
-            : Array.isArray((raw as any).documents)
-            ? (raw as any).documents
-            : [];
-
-          pageDocuments = pageDocuments.concat(items);
-          
-          // Check if we have more pages
-          hasMore = items.length === limit;
-          offset += limit;
-          
-          log("Fetched page", { pageSize: items.length, totalSoFar: pageDocuments.length, hasMore });
-          
-          // Safety break after 50 pages (5000 documents)
-          if (offset >= 5000) {
-            log("Safety break - too many documents");
-            break;
-          }
+        // First, try without pagination to see what we get
+        log("Fetching first page from endpoint", { baseEndpoint });
+        
+        const res = await fetch(baseEndpoint, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${signNowToken}`,
+            Accept: "application/json",
+          },
+        });
+        
+        lastStatus = res.status;
+        const raw = await res.json().catch(() => ({}));
+        
+        if (!res.ok) {
+          log("Endpoint failed", { baseEndpoint, status: res.status, raw });
+          continue;
         }
 
-        if (pageDocuments.length > 0) {
-          allDocuments = pageDocuments;
+        log("Raw response structure", { 
+          baseEndpoint,
+          isArray: Array.isArray(raw),
+          hasData: Boolean(raw.data),
+          hasDocuments: Boolean(raw.documents),
+          keys: Object.keys(raw || {}),
+          totalCount: raw.total_count || raw.count || 'unknown'
+        });
+
+        // Extract documents from response
+        const items: any[] = Array.isArray(raw)
+          ? raw
+          : Array.isArray((raw as any).data)
+          ? (raw as any).data
+          : Array.isArray((raw as any).documents)
+          ? (raw as any).documents
+          : [];
+
+        log("First page results", { 
+          itemCount: items.length,
+          firstItemKeys: items[0] ? Object.keys(items[0]) : [],
+          hasMore: items.length >= 15 // Check if likely paginated
+        });
+
+        if (items.length > 0) {
+          allDocuments = items;
           ok = true;
-          log("Successfully fetched all documents", { endpoint: baseEndpoint, total: allDocuments.length });
+          log("Successfully fetched documents", { endpoint: baseEndpoint, total: allDocuments.length });
           break;
         }
       } catch (err) {
