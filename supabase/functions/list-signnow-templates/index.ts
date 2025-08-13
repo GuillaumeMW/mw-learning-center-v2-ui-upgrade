@@ -37,7 +37,7 @@ serve(async (req) => {
     const signNowToken = Deno.env.get("SIGNNOW_API_KEY");
     if (!signNowToken) throw new Error("SIGNNOW_API_KEY is not configured in Supabase secrets");
 
-    // Try to fetch documents from SignNow API - start with first page
+    // Try different SignNow API endpoints with pagination
     const endpoints = [
       "https://api.signnow.com/user/documents",
       "https://api-eval.signnow.com/user/documents",
@@ -49,53 +49,98 @@ serve(async (req) => {
 
     for (const baseEndpoint of endpoints) {
       try {
-        // First, try without pagination to see what we get
-        log("Fetching first page from endpoint", { baseEndpoint });
-        
-        const res = await fetch(baseEndpoint, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${signNowToken}`,
-            Accept: "application/json",
-          },
-        });
-        
-        lastStatus = res.status;
-        const raw = await res.json().catch(() => ({}));
-        
-        if (!res.ok) {
-          log("Endpoint failed", { baseEndpoint, status: res.status, raw });
-          continue;
+        let offset = 0;
+        const limit = 50; // Start with reasonable page size
+        let hasMore = true;
+        let pageDocuments: any[] = [];
+
+        log("Starting pagination for endpoint", { baseEndpoint });
+
+        while (hasMore && pageDocuments.length < 500) { // Safety limit
+          // Try multiple pagination approaches
+          const paginationParams = [
+            `?offset=${offset}&limit=${limit}`,
+            `?page=${Math.floor(offset/limit) + 1}&per_page=${limit}`,
+            `?skip=${offset}&take=${limit}`
+          ];
+
+          let pageSuccess = false;
+          
+          for (const params of paginationParams) {
+            const endpoint = `${baseEndpoint}${params}`;
+            log("Trying endpoint", { endpoint, pageDocuments: pageDocuments.length });
+
+            const res = await fetch(endpoint, {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${signNowToken}`,
+                Accept: "application/json",
+              },
+            });
+            
+            lastStatus = res.status;
+            
+            if (!res.ok) {
+              log("Endpoint failed", { endpoint, status: res.status });
+              continue;
+            }
+
+            const raw = await res.json().catch(() => ({}));
+            
+            // Extract documents from various response formats
+            let items: any[] = [];
+            if (Array.isArray(raw)) {
+              items = raw;
+            } else if (raw.data && Array.isArray(raw.data)) {
+              items = raw.data;
+            } else if (raw.documents && Array.isArray(raw.documents)) {
+              items = raw.documents;
+            } else if (raw.results && Array.isArray(raw.results)) {
+              items = raw.results;
+            }
+
+            log("Page response", { 
+              endpoint,
+              itemCount: items.length,
+              totalPages: raw.total_pages || 'unknown',
+              totalCount: raw.total_count || raw.count || raw.total || 'unknown',
+              hasNext: raw.has_next || 'unknown'
+            });
+
+            if (items.length > 0) {
+              pageDocuments = pageDocuments.concat(items);
+              pageSuccess = true;
+              
+              // Check various indicators for more pages
+              hasMore = items.length === limit || 
+                       raw.has_next === true || 
+                       (raw.total_count && pageDocuments.length < raw.total_count) ||
+                       (raw.total && pageDocuments.length < raw.total);
+              
+              log("Page successful", { 
+                pageSize: items.length, 
+                totalSoFar: pageDocuments.length, 
+                hasMore 
+              });
+              break;
+            }
+          }
+
+          if (!pageSuccess) {
+            log("All pagination approaches failed for this page");
+            break;
+          }
+
+          offset += limit;
         }
 
-        log("Raw response structure", { 
-          baseEndpoint,
-          isArray: Array.isArray(raw),
-          hasData: Boolean(raw.data),
-          hasDocuments: Boolean(raw.documents),
-          keys: Object.keys(raw || {}),
-          totalCount: raw.total_count || raw.count || 'unknown'
-        });
-
-        // Extract documents from response
-        const items: any[] = Array.isArray(raw)
-          ? raw
-          : Array.isArray((raw as any).data)
-          ? (raw as any).data
-          : Array.isArray((raw as any).documents)
-          ? (raw as any).documents
-          : [];
-
-        log("First page results", { 
-          itemCount: items.length,
-          firstItemKeys: items[0] ? Object.keys(items[0]) : [],
-          hasMore: items.length >= 15 // Check if likely paginated
-        });
-
-        if (items.length > 0) {
-          allDocuments = items;
+        if (pageDocuments.length > 0) {
+          allDocuments = pageDocuments;
           ok = true;
-          log("Successfully fetched documents", { endpoint: baseEndpoint, total: allDocuments.length });
+          log("Successfully fetched all documents", { 
+            endpoint: baseEndpoint, 
+            total: allDocuments.length 
+          });
           break;
         }
       } catch (err) {
@@ -117,17 +162,41 @@ serve(async (req) => {
       )
     );
 
+    // Helper function to format dates properly
+    const formatDate = (timestamp: any) => {
+      if (!timestamp) return 'No date';
+      try {
+        // Handle Unix timestamp (seconds or milliseconds)
+        const ts = typeof timestamp === 'number' 
+          ? (timestamp > 1000000000000 ? timestamp : timestamp * 1000)
+          : new Date(timestamp).getTime();
+        return new Date(ts).toLocaleDateString();
+      } catch {
+        return 'Invalid date';
+      }
+    };
+
     // Show ALL documents for debugging
     const allDocsFormatted = allDocuments.map((t) => ({
       id: t.id || t.document_id || t.uid || t.uuid,
       name: t.name || t.document_name || t.title || t.original_filename,
-      updated: t.updated || t.updated_at || t.modified,
+      updated: formatDate(t.updated || t.updated_at || t.modified || t.created),
+      created: formatDate(t.created || t.created_at),
+      templateFlag: t.template,
       isTemplate: Boolean(
         t?.is_template === true ||
           t?.template === true ||
           t?.type === "template" ||
           t?.document_type === "template"
       ),
+      rawData: {
+        id: t.id,
+        document_name: t.document_name,
+        updated: t.updated,
+        created: t.created,
+        template: t.template,
+        entity_type: t.entity_type
+      }
     }));
 
     // Map to concise list (templates only)
