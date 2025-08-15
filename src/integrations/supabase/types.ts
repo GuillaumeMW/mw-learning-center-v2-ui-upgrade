@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -19,6 +19,7 @@ export type Database = {
           admin_approval_status: Database["public"]["Enums"]["app_admin_approval_status"]
           completed_at: string | null
           contract_doc_url: string | null
+          contract_document_id: string | null
           contract_status: Database["public"]["Enums"]["app_contract_status"]
           course_id: string
           created_at: string
@@ -37,6 +38,7 @@ export type Database = {
           admin_approval_status?: Database["public"]["Enums"]["app_admin_approval_status"]
           completed_at?: string | null
           contract_doc_url?: string | null
+          contract_document_id?: string | null
           contract_status?: Database["public"]["Enums"]["app_contract_status"]
           course_id: string
           created_at?: string
@@ -55,6 +57,7 @@ export type Database = {
           admin_approval_status?: Database["public"]["Enums"]["app_admin_approval_status"]
           completed_at?: string | null
           contract_doc_url?: string | null
+          contract_document_id?: string | null
           contract_status?: Database["public"]["Enums"]["app_contract_status"]
           course_id?: string
           created_at?: string
@@ -464,7 +467,7 @@ export type Database = {
     }
     Functions: {
       can_access_course: {
-        Args: { user_id_param: string; course_level_param: number }
+        Args: { course_level_param: number; user_id_param: string }
         Returns: boolean
       }
       get_current_user_role: {
@@ -473,8 +476,8 @@ export type Database = {
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }
